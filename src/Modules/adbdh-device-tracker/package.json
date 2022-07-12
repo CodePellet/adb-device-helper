@@ -1,0 +1,8 @@
+{
+    "name": "adbdh-device-tracker",
+    "version": "1.0.0",
+    "description": "Module for connecting to an adb socket with tracking of connected devices",
+    "main": "adbdh-device-tracker.js",
+    "author": "CodePellet",
+    "license": "ISC"
+}

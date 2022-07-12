@@ -1,0 +1,8 @@
+{
+    "name": "adbdh-rogcat-profiler",
+    "version": "1.0.0",
+    "description": "Module to load and store rogcat profile information",
+    "main": "adbdh-rogcat-profiler.js",
+    "author": "CodePellet",
+    "license": "ISC"
+}

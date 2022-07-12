@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script defer src="js/script.js" type="module"></script>
+</head>
+
+<body>
+
+  <!-- Toasts -->
+  <div id="toast_container" class="toast-container position-fixed bottom-0 start-0 p-3" style="z-index: 9999;">
+  </div>
+
+  <!-- Main container -->
+  <div class="container-fluid vh-100 vw-100 d-flex align-items-center justify-content-center m-0 p-0 bg-dark">
+    <section class="w-100 h-100 p-2 d-flex flex-column start-0">
+      <header class="
+            container-fluid
+            p-0
+            m-0
+            mb-3
+            d-flex
+            align-items-center
+            bg-dark
+            rounded-2
+            justify-content-around
+          ">
+        <div class="ps-2 d-flex" style="width: 126px;">
+          <div class="m-0 p-0 d-flex flex-column justify-content-center align-items-center"
+            style="max-width: 64px; min-width: 64px;">
+            <svg class="fill-primary" viewBox="0 0 20 24" version="1.1" xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink">
+              <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g id="Outlined" transform="translate(-272.000000, -154.000000)">
+                  <g id="Action" transform="translate(100.000000, 100.000000)">
+                    <g id="Outlined-/-Action-/-android" transform="translate(170.000000, 54.000000)">
+                      <g>
+                        <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                        <path
+                          d="M6,18 C6,18.55 6.45,19 7,19 L8,19 L8,22.5 C8,23.33 8.67,24 9.5,24 C10.33,24 11,23.33 11,22.5 L11,19 L13,19 L13,22.5 C13,23.33 13.67,24 14.5,24 C15.33,24 16,23.33 16,22.5 L16,19 L17,19 C17.55,19 18,18.55 18,18 L18,8 L6,8 L6,18 Z M3.5,8 C2.67,8 2,8.67 2,9.5 L2,16.5 C2,17.33 2.67,18 3.5,18 C4.33,18 5,17.33 5,16.5 L5,9.5 C5,8.67 4.33,8 3.5,8 Z M20.5,8 C19.67,8 19,8.67 19,9.5 L19,16.5 C19,17.33 19.67,18 20.5,18 C21.33,18 22,17.33 22,16.5 L22,9.5 C22,8.67 21.33,8 20.5,8 Z M15.53,2.16 L16.83,0.86 C17.03,0.66 17.03,0.35 16.83,0.15 C16.63,-0.05 16.32,-0.05 16.12,0.15 L14.64,1.63 C13.85,1.23 12.95,1 12,1 C11.04,1 10.14,1.23 9.34,1.63 L7.85,0.15 C7.65,-0.05 7.34,-0.05 7.14,0.15 C6.94,0.35 6.94,0.66 7.14,0.86 L8.45,2.17 C6.97,3.26 6,5.01 6,7 L18,7 C18,5.01 17.03,3.25 15.53,2.16 Z M10,5 L9,5 L9,4 L10,4 L10,5 Z M15,5 L14,5 L14,4 L15,4 L15,5 Z"
+                          id="🔹-Icon-Color" fill="#f8f9fa"></path>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <div class="text-light d-flex flex-column container-fluid pt-2"
+            style="font-size: 12px; transform: rotate(-90deg);">
+            <span class="d-flex">
+              by <a class="ms-1 text-reset" href="#">CodePellet</a>
+            </span>
+          </div>
+        </div>
+        <div class="container-fluid d-flex p-2 m-0 bg-light rounded-2 align-items-center justify-content-between">
+          <div class="d-flex flex-column" style="width: 500px;">
+            <div class="input-group mb-2">
+              <label class="input-group-text bg-dark text-light border-dark" for="deviceSelect"
+                style="width: 75px">Device</label>
+              <select class="form-select" id="deviceSelect"></select>
+              <!-- Put empty container behind select to be able to show a badge counter for the connected devices -->
+              <span class="position-relative" style="z-index: 1000;">
+                <span id="adbDeviceCountBadge"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"></span>
+              </span>
+              <button id="startAdbServerButton" class="btn btn-success" type="button" disabled><i
+                  class="fas fa-play fa-fw"></i></button>
+              <button id="stopAdbServerButton" class="btn btn-danger" type="button" disabled><i
+                  class="fas fa-stop fa-fw"></i></button>
+            </div>
+            <div class="d-flex">
+              <div class="input-group">
+                <label class="input-group-text bg-dark text-light border-dark" for="profileSelect"
+                  style="width: 75px">Profile</label>
+                <select class="form-select" id="profile-select">
+                  <optgroup label="Default Profile" class="profile-select-default-group"></optgroup>
+                  <optgroup label="Custom Profiles" class="profile-select-custom-group"></optgroup>
+                </select>
+                <input class="form-control visually-hidden" type="text" name="newProfileName" id="newProfileName"
+                  placeholder="Profile name" onkeyup="if (event.key == 'Enter') document.querySelector('.btn-add-profile').click();">
+                <button class="btn btn-outline-primary bg-primary text-light btn-add-profile" type="button">
+                  <i class="fas fa-plus fa-fw"></i>
+                </button>
+                <button class="btn btn-outline-danger bg-danger text-light btn-remove-profile" type="button">
+                  <i class="fas fa-trash fa-fw"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="w-50 p-2 d-flex justify-content-end">
+            <div class="form-check form-switch me-2">
+              <input class="form-check-input" type="checkbox" id="saveTraceToFile" checked />
+              <label class="form-check-label" for="switchSaveTrace">Save trace</label>
+            </div>
+            <a href="#" id="openTraceFolder">
+              <i class="fas fa-external-link-alt fa-lg fa-fw text-dark"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+      <div class="d-flex w-100 h-100 mb-3 overflow-auto">
+        <ul class="nav nav-pills bg-light rounded-start flex-column function-tabs p-2" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneFilter"
+              aria-current="true">
+              <i class="fas fa-filter fa-fw"></i>
+              <span>Rogcat</span>
+          </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneMacros">
+              <i class="fas fa-laptop-code fa-fw"></i>
+              <span>Macros</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content flex-grow-1">
+          <!-- Filter Panel -->
+          <div class="tab-pane h-100 active" id="tabPaneFilter" role="tabpanel" aria-labelledby="filter-tab">
+            <main class="h-100 flex-grow-1 rounded-end p-0 overflow-auto">
+              <div class="card h-100 rounded-0">
+                <div class="card-header d-flex position-relative">
+                  <ul class="nav nav-tabs card-header-tabs rogcat-filter-tabs" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneTags"
+                        aria-current="true" href="#">
+                        Tags
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneMessages"
+                        href="#">Messages</a>
+                    </li>
+                  </ul>
+                  <div class="d-flex align-items-center position-absolute top-50 bottom-50 end-0 me-3 btn-group">
+                    <button id="saveChanges" class="btn btn-primary">
+                      <i class="fas fa-save fa-fw"></i>
+                      <span>Save</span>
+                    </button>
+                    <button id="newListItem" class="btn btn-primary">
+                      <i class="fas fa-plus fa-fw"></i>
+                      <span>New</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body overflow-auto">
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="tabPaneTags" role="tabpanel" aria-labelledby="tags-tab">
+                      <ul class="list-group list-group-flush tag-list"></ul>
+                    </div>
+                    <div class="tab-pane" id="tabPaneMessages" role="tabpanel" aria-labelledby="messages-tab">
+                      <ul class="list-group list-group-flush message-list"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
+          </div>
+          <!-- Macro Panel -->
+          <div class="tab-pane h-100" id="tabPaneMacros" role="tabpanel" aria-labelledby="macros-tab">
+            <main class="bg-light h-100 flex-grow-1 rounded-end p-0 overflow-auto">
+              <div class="card h-100 rounded-0">
+                <div class="card-header d-flex position-relative">
+                  <ul class="nav nav-tabs card-header-tabs macro-tabs" role="tablist">
+                    <li class="nav-item">
+                      <button class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneAdb"
+                        aria-current="true" >
+                        ADB
+                    </button>
+                    </li>
+                    <li class="nav-item" hidden>
+                      <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneSsh">SSH</button>
+                    </li>
+                    <li class="nav-item">
+                      <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneResults"
+                        >Results</button>
+                    </li>
+                  </ul>
+                  <div class="d-flex align-items-center position-absolute top-50 bottom-50 end-0 me-3 btn-group">
+                    <button id="saveMacroChanges" class="btn btn-primary">
+                      <i class="fas fa-save fa-fw"></i>
+                      <span>Save</span>
+                    </button>
+                    <button id="newMacroItem" class="btn btn-primary">
+                      <i class="fas fa-plus fa-fw"></i>
+                      <span>New</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body overflow-auto">
+                  <div class="tab-content h-100">
+                    <div class="tab-pane active" id="tabPaneAdb" role="tabpanel" aria-labelledby="adb-tab">
+                      <ul class="list-group list-group-flush adb-macro-list"></ul>
+                    </div>
+                    <div class="tab-pane" id="tabPaneSsh" role="tabpanel" aria-labelledby="ssh-tab">
+                      <ul class="list-group list-group-flush ssh-macro-list"></ul>
+                    </div>
+                    <div class="tab-pane h-100" id="tabPaneResults" role="tabpanel" aria-labelledby="results-tab"></div>
+                  </div>
+                </div>
+              </div>
+
+            </main>
+          </div>
+        </div>
+      </div>
+      <footer class="
+            container-fluid
+            p-2
+            d-flex
+            align-items-center
+            justify-content-end
+            bg-light
+            rounded-2
+          ">
+        <div class="d-flex justify-content-around">
+          <button type="button" class="btn btn-dark btn-lg btn-start-rogcat text-nowrap">
+            <i class="fa fa-rocket fa-fw fa-lg rogcat-icon" aria-hidden="true"></i>
+            <span>Rogcat Trace</span>
+          </button>
+          <button type="button" class="btn btn-secondary btn-lg btn-local-shell text-nowrap mx-2">
+            <i class="fab fa-windows fa-fw fa-lg local-shell-icon"></i>
+            Local Shell
+          </button>
+          <button type="button" class="btn btn-secondary btn-lg btn-device-shell text-nowrap">
+            <i class="fas fa-microchip fa-fw fa-lg device-shell-icon"></i>
+            Device Shell
+          </button>
+        </div>
+      </footer>
+    </section>
+  </div>
+</body>
+
+</html>

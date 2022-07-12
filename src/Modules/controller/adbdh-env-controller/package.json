@@ -1,0 +1,8 @@
+{
+  "name": "adbdh-env-controller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "adbdh-env-controller.js",
+  "author": "CodePellet",
+  "license": "ISC"
+}

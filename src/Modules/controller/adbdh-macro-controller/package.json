@@ -1,0 +1,9 @@
+{
+  "name": "adbdh-macro-controller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "adbdh-macro-controller.js",
+  "keywords": [],
+  "author": "CodePellet",
+  "license": "ISC"
+}
