@@ -62,7 +62,7 @@ Go to the project directory
 Build the Helper
 
 ```bash
-  npm build
+  npm run build
 ```
 **Note: Build only supports the Windows OS right now.**
 
