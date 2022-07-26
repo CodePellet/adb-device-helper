@@ -17,6 +17,8 @@ class AdbDeviceController {
 
         window.adb.track(this.fromIPCMain().devices.track);
 
+        this.adbDeviceSelect.addEventListener("change", this.eventListeners().adbDeviceSelect.change);
+
         this.startAdbServer.addEventListener("click", this.eventListeners().btnStartAdbServer.click);
         this.stopAdbServer.addEventListener("click", this.eventListeners().btnStopAdbServer.click);
 
@@ -32,6 +34,11 @@ class AdbDeviceController {
 
     eventListeners() {
         return {
+            adbDeviceSelect: {
+                change: (e) => {
+                    this.activeDevice = e.target.value;
+                }
+            },
             btnStartAdbServer: {
                 click: () => {
                     this.toIPCMain().server.start();
@@ -66,7 +73,7 @@ class AdbDeviceController {
                 /**
                  * @param {Object} adbDevices
                  */
-                track: (adbDevices) => {
+                track: async (adbDevices) => {
                     this.devices().clear();
                     if (adbDevices.error) {
                         this.adbDeviceSelect.insertAdjacentHTML("beforeend", "<option>Server not running...</option>");
@@ -76,9 +83,8 @@ class AdbDeviceController {
                     }
                     this.startAdbServer.disabled = true;
                     this.stopAdbServer.disabled = !this.startAdbServer.disabled;
-                    this.activeDevice = this.adbDeviceSelect.value;
                     this.adbDeviceCountBadge.innerHTML = adbDevices.length;
-                    adbDevices.forEach((d) => this.devices().add(d));
+                    await adbDevices.forEach((d) => this.devices().add(d));
                     if (this.activeDevice === "") return;
                     if (this.adbDeviceSelect.innerHTML.includes(this.activeDevice)) this.adbDeviceSelect.value = this.activeDevice;
                 },
