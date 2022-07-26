@@ -1,6 +1,6 @@
 {
     "name": "adb-device-helper",
-    "version": "1.2.0",
+    "version": "2022.30.2",
     "description": "Helper for selected adb tasks",
     "main": "src/main.js",
     "scripts": {
@@ -43,7 +43,7 @@
     "build": {
         "appId": "com.adbDeviceHelper.app",
         "productName": "ADB Device Helper",
-        "copyright": "Copyright © 2021 @ CodePellet",
+        "copyright": "Copyright © 2022 @ CodePellet",
         "directories": {
             "output": "dist"
         },
