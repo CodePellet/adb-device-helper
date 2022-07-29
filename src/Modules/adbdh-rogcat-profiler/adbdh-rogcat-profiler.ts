@@ -1,19 +1,43 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { ipcMain } = require("electron");
+import toml, { JsonMap } from "@iarna/toml";
+import { ipcMain, IpcMainEvent } from "electron";
+import * as log from "electron-log";
+import * as fs from "fs";
+import * as path from "path";
 
-const fs = require("fs");
-const toml = require("@iarna/toml");
-const path = require("path");
-const log = require("electron-log");
 
-class RogcatProfiler {
-    constructor() {
-        this.rogcatProfileFile = path.join(process.env.appdata, "rogcat", "profiles.toml");
+interface RogcatProfile {
+    name: string;
+    data: {
+        comment?: string;
+        extends?: string[];
+        highlight?: string[];
+        message?: string[];
+        message_ignore_case?: string[];
+        regex?: string[];
+        tag?: string[];
+        tag_ignore_case?: string[];
+    };
+
+}
+
+
+export class RogcatProfiler {
+
+    private static _instance: RogcatProfiler;
+
+    private rogcatProfileFile: string;
+    private tomlProfiles: any;
+
+
+    private constructor() {
+        // since process.env.appdata is a default windows environment variable, we can tell typscript in this case, that the value of it will never be null.
+        this.rogcatProfileFile = path.join(process.env.appdata!, "rogcat", "profiles.toml");
         this.tomlProfiles = {};
 
         this.setup = this.setup.bind(this);
         this.getProfiles = this.getProfiles.bind(this);
-        this.setProfiles = this.setProfiles.bind(this);
+        this.saveProfilesToFile = this.saveProfilesToFile.bind(this);
         this.createProfile = this.createProfile.bind(this);
         this.updateProfile = this.updateProfile.bind(this);
         this.deleteProfile = this.deleteProfile.bind(this);
@@ -25,7 +49,11 @@ class RogcatProfiler {
         this.setup();
     }
 
-    setup() {
+    public static getInstance(): RogcatProfiler {
+        return this._instance || (this._instance = new this());
+    }
+
+    private setup(): void {
         // Path to rogcat default profile %appdata%\rogcat\
         // check if folder rogcat exists in %appdata% => create it if not
         // create default rogcat profile file if it does not exist
@@ -45,36 +73,33 @@ class RogcatProfiler {
         }
     }
 
-    getProfiles() {
+    public getProfiles(): any {
         this.tomlProfiles = toml.parse(fs.readFileSync(this.rogcatProfileFile, "utf-8"));
         return this.tomlProfiles;
     }
 
-    setProfiles(profiles) {
+    private saveProfilesToFile(profiles: JsonMap): void {
         fs.writeFileSync(this.rogcatProfileFile, toml.stringify(profiles));
     }
 
-    createProfile(event, profile) {
-        this.tomlProfiles.profile = { ...this.tomlProfiles.profile, ...profile };
-        // return this.tomlProfiles;
-        this.setProfiles(this.tomlProfiles);
+    public createProfile(event: IpcMainEvent, profile: RogcatProfile): void {
+        this.tomlProfiles.profile = { ...this.tomlProfiles.profile, [profile.name]: { ...profile.data } };
+        this.saveProfilesToFile(this.tomlProfiles);
         event.reply("rogcat:profile", this.getProfiles());
     }
 
-    updateProfile(event, profile) {
+    public updateProfile(event: IpcMainEvent, profile: RogcatProfile): void {
         const rogcatProfiles = this.getProfiles();
-        rogcatProfiles.profile[profile.name].comment = profile.comment;
-        rogcatProfiles.profile[profile.name].tag = profile.tag;
-        rogcatProfiles.profile[profile.name].message = profile.message;
-        this.setProfiles(rogcatProfiles);
+        rogcatProfiles.profile[profile.name].comment = profile.data.comment;
+        rogcatProfiles.profile[profile.name].tag = profile.data.tag;
+        rogcatProfiles.profile[profile.name].message = profile.data.message;
+        this.saveProfilesToFile(rogcatProfiles);
         event.reply("rogcat:profile-update", this.getProfiles());
     }
 
-    deleteProfile(event, profile) {
-        delete this.tomlProfiles.profile[profile];
-        this.setProfiles(this.tomlProfiles);
+    public deleteProfile(event: IpcMainEvent, profileName: string): void {
+        delete this.tomlProfiles.profile[profileName];
+        this.saveProfilesToFile(this.tomlProfiles);
         event.reply("rogcat:profile", this.getProfiles());
     }
 }
-
-module.exports = new RogcatProfiler();

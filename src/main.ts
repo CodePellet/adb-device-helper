@@ -1,20 +1,24 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { app, BrowserWindow, Menu } = require("electron");
-const path = require("path");
-const fs = require("fs");
-const log = require("electron-log");
-const adbDeviceTracker = require("adbdh-device-tracker");
-const rogcatProfiler = require("adbdh-rogcat-profiler");
-const envController = require("adbdh-env-controller");
+import { AdbDeviceTracker } from "./Modules/adbdh-device-tracker/adbdh-device-tracker";
+import { EnvController } from "./Modules/controller/adbdh-env-controller/adbdh-env-controller";
+import { RogcatProfiler } from "./Modules/adbdh-rogcat-profiler/adbdh-rogcat-profiler";
+import { app, BrowserWindow, Menu } from "electron";
+import * as log from "electron-log";
+import * as fs from "fs";
+import * as path from "path";
 
 /**
  * @type {BrowserWindow}
  */
-let mainWindow;
+let mainWindow: any;
 Menu.setApplicationMenu(null);
 
+const tracker = AdbDeviceTracker.getInstance();
+const profiler = RogcatProfiler.getInstance();
+const env = EnvController.getInstance();
+
 log.debug("[Main]", "Setting up environment");
-envController.setup();
+env.setup();
 log.debug("[Main]", "ADB_VENDOR_KEYS", process.env.ADB_VENDOR_KEYS);
 log.debug("[Main]", "ADB_VENDOR_KEYS", process.env.ADB_VENDOR_KEYS);
 log.debug("[Main]", "PATH", process.env.PATH);
@@ -33,14 +37,12 @@ app.on("ready", () => {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            enableRemoteModule: false,
-            preload: path.join(app.getAppPath(), "src", "preload.js"),
-            worldSafeExecuteJavaScript: true,
+            preload: path.join(__dirname, "preload.js"),
         },
     });
 
     // Load html into window
-    mainWindow.loadFile(path.join(app.getAppPath(), "public", "mainWindow2.html"));
+    mainWindow.loadFile(path.join(__dirname, "..", "public", "mainWindow2.html"));
 
     if (!app.isPackaged) mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
 
@@ -53,10 +55,10 @@ app.on("ready", () => {
     });
 
     mainWindow.webContents.on("dom-ready", () => {
-        if (!fs.existsSync(envController.tmpPath)) fs.mkdirSync(envController.tmpPath);
-        adbDeviceTracker.setMainWindowRef(mainWindow);
-        adbDeviceTracker.connect();
-        mainWindow.webContents.send("rogcat:profile", rogcatProfiler.getProfiles());
+        if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
+        tracker.setMainWindowRef(mainWindow);
+        tracker.connect();
+        mainWindow.webContents.send("rogcat:profile", profiler.getProfiles());
         mainWindow.webContents.send("app:version", app.getVersion());
     });
 });

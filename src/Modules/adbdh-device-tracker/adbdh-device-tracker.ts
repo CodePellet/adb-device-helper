@@ -1,19 +1,30 @@
-const { execSync } = require("child_process");
-const { Socket } = require("net");
-const log = require("electron-log");
+import { execSync } from "child_process";
+import { BrowserWindow } from "electron";
+import * as log from "electron-log";
+import { Socket } from "net";
 
-const zeroPad = (num, places) => String(num).padStart(places, "0");
+const zeroPad = (num: string, places: number) => String(num).padStart(places, "0");
 
-class AdbDeviceTracker {
+export class AdbDeviceTracker {
+
+  private static _instance: AdbDeviceTracker;
+
+  private attachedAdbDevices: Object[] = [];
+  private mainWindowRef!: BrowserWindow;
+  private runningAdbPath: string = "";
+  private port: number;
+  private host: string;
+  private socket: Socket;
+
   /**
    * @param {?number} port Optional The port of the adb socket. Default: 5037
    * @param {?string} host Optional The ip address of the adb server host. Default: 127.0.0.1
    * @returns {AdbDeviceTracker} AdbDeviceTracker object
    */
-  constructor() {
+  private constructor(port: number = 5037, host: string = "127.0.0.1") {
     this.attachedAdbDevices = [];
-    this.port = 5037;
-    this.host = "127.0.0.1";
+    this.port = port;
+    this.host = host;
     this.socket = new Socket();
 
     // add binding to functions to honor scope of class
@@ -32,7 +43,11 @@ class AdbDeviceTracker {
     this.socket.on("error", this.onError);
   }
 
-  setMainWindowRef(windowRef) {
+  public static getInstance() {
+    return this._instance || (this._instance = new this());
+  }
+
+  setMainWindowRef(windowRef: BrowserWindow) {
     this.mainWindowRef = windowRef;
   }
 
@@ -78,13 +93,13 @@ class AdbDeviceTracker {
     this.socket.write(`${payloadLength}${payload}`);
   }
 
-  onData(data) {
+  onData(data: any) {
     this.attachedAdbDevices = [];
 
-    const deviceLength = data.toString().replace("OKAY", "").slice(0, 4);
+    const deviceLength: string = data.toString().replace("OKAY", "").slice(0, 4);
 
     // Remove the first 4 characters as they represent the data length
-    const deviceString = data
+    const deviceString: string = data
       .toString()
       .replace("OKAY", "")
       .slice(4)
@@ -139,8 +154,10 @@ class AdbDeviceTracker {
     setTimeout(this.connect, 1000);
   }
 
-  onError(error) {
+  onError(error: any) {
     let notificationBody = "";
+    console.log("[Device-Tracker]", "error:Error -", error);
+
     switch (error.code) {
       case "EISCONN":
         notificationBody = "Already connected to ADB-Socket";
@@ -161,5 +178,3 @@ class AdbDeviceTracker {
     });
   }
 }
-
-module.exports = new AdbDeviceTracker();
