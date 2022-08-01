@@ -4,7 +4,7 @@
     "description": "Helper for selected adb tasks",
     "main": "dist/main/main.js",
     "scripts": {
-        "start": "electron .",
+        "start": "npm run build:dev && electron .",
         "build:dev": "tsc && cp -rf public dist/",
         "build": "npm run build:dev && electron-builder --win"
     },

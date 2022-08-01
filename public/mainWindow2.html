@@ -82,7 +82,8 @@
                   <optgroup label="Custom Profiles" class="profile-select-custom-group"></optgroup>
                 </select>
                 <input class="form-control visually-hidden" type="text" name="newProfileName" id="newProfileName"
-                  placeholder="Profile name" onkeyup="if (event.key == 'Enter') document.querySelector('.btn-add-profile').click();">
+                  placeholder="Profile name"
+                  onkeyup="if (event.key == 'Enter') document.querySelector('.btn-add-profile').click();">
                 <button class="btn btn-outline-primary bg-primary text-light btn-add-profile" type="button">
                   <i class="fas fa-plus fa-fw"></i>
                 </button>
@@ -110,7 +111,7 @@
               aria-current="true">
               <i class="fas fa-filter fa-fw"></i>
               <span>Rogcat</span>
-          </button>
+            </button>
           </li>
           <li class="nav-item">
             <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneMacros">
@@ -170,16 +171,16 @@
                   <ul class="nav nav-tabs card-header-tabs macro-tabs" role="tablist">
                     <li class="nav-item">
                       <button class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneAdb"
-                        aria-current="true" >
+                        aria-current="true">
                         ADB
-                    </button>
+                      </button>
                     </li>
                     <li class="nav-item" hidden>
                       <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneSsh">SSH</button>
                     </li>
                     <li class="nav-item">
-                      <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneResults"
-                        >Results</button>
+                      <button class="nav-link text-dark" data-bs-toggle="tab"
+                        data-bs-target="#tabPaneResults">Results</button>
                     </li>
                   </ul>
                   <div class="d-flex align-items-center position-absolute top-50 bottom-50 end-0 me-3 btn-group">
@@ -194,14 +195,14 @@
                   </div>
                 </div>
                 <div class="card-body overflow-auto">
-                  <div class="tab-content h-100">
+                  <div class="tab-content">
                     <div class="tab-pane active" id="tabPaneAdb" role="tabpanel" aria-labelledby="adb-tab">
                       <ul class="list-group list-group-flush adb-macro-list"></ul>
                     </div>
                     <div class="tab-pane" id="tabPaneSsh" role="tabpanel" aria-labelledby="ssh-tab">
                       <ul class="list-group list-group-flush ssh-macro-list"></ul>
                     </div>
-                    <div class="tab-pane h-100" id="tabPaneResults" role="tabpanel" aria-labelledby="results-tab"></div>
+                    <div class="tab-pane" id="tabPaneResults" role="tabpanel" aria-labelledby="results-tab"></div>
                   </div>
                 </div>
               </div>
