@@ -1,12 +1,12 @@
+import { execSync } from "child_process";
+import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
-import { AdbDeviceTracker } from "../../adbdh-device-tracker/adbdh-device-tracker";
 
 export class EnvController {
 
     private static _instance: EnvController;
 
-    private tracker: AdbDeviceTracker = AdbDeviceTracker.getInstance();
     public tmpPath: string;
 
 
@@ -22,11 +22,22 @@ export class EnvController {
     }
 
     public setup(): void {
-        this.createOrExpandEnvVariable("PATH", this.tracker.getRunningAdbPath());
+        this.createOrExpandEnvVariable("PATH", this.getRunningAdbProcessPath());
         this.createOrExpandEnvVariable("PATH", path.join(process.resourcesPath, "adb-micro", "bin"));
         this.createOrExpandEnvVariable("PATH", path.join(process.resourcesPath, "adb-micro", "rogcat"));
 
         if (!fs.existsSync(this.tmpPath)) fs.mkdirSync(this.tmpPath);
+    }
+
+    private getRunningAdbProcessPath(): string {
+        let adbPath: string = "";
+        if (process.platform === "win32")
+            adbPath = execSync("powershell Split-Path (Get-Process adb).Path").toString().trim();
+
+        if (adbPath !== "") {
+            log.info("[EnvController]", "Located adb at", adbPath);
+        }
+        return adbPath;
     }
 
     /**

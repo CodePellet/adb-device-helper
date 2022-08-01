@@ -76,11 +76,23 @@ class AdbDeviceController {
                 track: async (adbDevices) => {
                     this.devices().clear();
                     if (adbDevices.error) {
-                        this.adbDeviceSelect.insertAdjacentHTML("beforeend", "<option>Server not running...</option>");
-                        this.startAdbServer.disabled = false;
+                        switch (adbDevices.error.name) {
+                            case "noDevicesError":
+                                this.adbDeviceSelect.insertAdjacentHTML("beforeend", `<option>${adbDevices.error.message}</option>`);
+                                this.startAdbServer.disabled = true;
+                                break;
+                            case "ECONNREFUSED":
+                                this.adbDeviceSelect.insertAdjacentHTML("beforeend", "<option>Server not running...</option>");
+                                this.startAdbServer.disabled = false;
+                                break;
+
+                            default:
+                                break;
+                        }
                         this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                         return;
                     }
+
                     this.startAdbServer.disabled = true;
                     this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                     this.adbDeviceCountBadge.innerHTML = adbDevices.length;

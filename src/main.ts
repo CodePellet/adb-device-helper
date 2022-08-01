@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { AdbDeviceTracker } from "./Modules/adbdh-device-tracker/adbdh-device-tracker";
+import { AdbDeviceTracker } from "adbdevicetracker";
 import { EnvController } from "./Modules/controller/adbdh-env-controller/adbdh-env-controller";
 import { RogcatProfiler } from "./Modules/adbdh-rogcat-profiler/adbdh-rogcat-profiler";
 import { app, BrowserWindow, Menu } from "electron";
@@ -10,18 +10,15 @@ import * as path from "path";
 /**
  * @type {BrowserWindow}
  */
-let mainWindow: any;
+let mainWindow: BrowserWindow;
 Menu.setApplicationMenu(null);
 
-const tracker = AdbDeviceTracker.getInstance();
+const tracker = new AdbDeviceTracker();
 const profiler = RogcatProfiler.getInstance();
 const env = EnvController.getInstance();
 
 log.debug("[Main]", "Setting up environment");
 env.setup();
-log.debug("[Main]", "ADB_VENDOR_KEYS", process.env.ADB_VENDOR_KEYS);
-log.debug("[Main]", "ADB_VENDOR_KEYS", process.env.ADB_VENDOR_KEYS);
-log.debug("[Main]", "PATH", process.env.PATH);
 
 // Listen for app to be ready
 app.on("ready", () => {
@@ -50,15 +47,22 @@ app.on("ready", () => {
         // console.log(mainWindow.getBounds());
     });
 
-    mainWindow.on("closed", () => {
-        app.quit();
-    });
+    mainWindow.on("closed", () => app.quit());
 
     mainWindow.webContents.on("dom-ready", () => {
         if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
-        tracker.setMainWindowRef(mainWindow);
-        tracker.connect();
+        tracker.start();
+        tracker
+            .on("info", message => {
+                log.info(message);
+            })
+            .on("data", adbDevices => {
+                mainWindow.webContents.send("adb:track-devices", adbDevices);
+            })
+            .on("error", (error: NodeJS.ErrnoException) => {
+                log.error("[Tracker:Error]", { error: { ...error, name: error.code ?? error.name, message: error.message } });
+                mainWindow.webContents.send("adb:track-devices", { error: { ...error, name: error.code ?? error.name, message: error.message } });
+            });
         mainWindow.webContents.send("rogcat:profile", profiler.getProfiles());
-        mainWindow.webContents.send("app:version", app.getVersion());
     });
 });
