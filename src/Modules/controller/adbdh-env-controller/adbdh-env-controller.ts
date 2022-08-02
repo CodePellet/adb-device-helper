@@ -31,8 +31,9 @@ export class EnvController {
 
     private getRunningAdbProcessPath(): string {
         let adbPath: string = "";
+        const getAdbProcessPwshCommand = 'If((Get-Process adb -ErrorAction SilentlyContinue) -ne $null) { Split-Path (Get-Process adb).Path }'
         if (process.platform === "win32")
-            adbPath = execSync("powershell Split-Path (Get-Process adb).Path").toString().trim();
+            adbPath = execSync(`powershell ${getAdbProcessPwshCommand}`).toString().trim();
 
         if (adbPath !== "") {
             log.info("[EnvController]", "Located adb at", adbPath);
