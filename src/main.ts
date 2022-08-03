@@ -7,11 +7,8 @@ import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
 
-/**
- * @type {BrowserWindow}
- */
+
 let mainWindow: BrowserWindow;
-Menu.setApplicationMenu(null);
 
 const tracker = new AdbDeviceTracker();
 const profiler = RogcatProfiler.getInstance();
@@ -36,6 +33,7 @@ app.on("ready", () => {
             contextIsolation: true,
             preload: path.join(__dirname, "preload.js"),
         },
+        autoHideMenuBar: true
     });
 
     // Load html into window
