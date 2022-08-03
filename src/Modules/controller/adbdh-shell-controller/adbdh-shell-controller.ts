@@ -22,7 +22,7 @@ export class ShellController {
 
     private androidDevice: AndroidDevice = { serial: "", model: "" };
 
-    constructor() {
+    private constructor() {
 
         this.startServer = this.startServer.bind(this);
         this.stopServer = this.stopServer.bind(this);
