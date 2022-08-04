@@ -74,15 +74,19 @@ class AdbDeviceController {
                  * @param {Object} adbDevices
                  */
                 track: async (adbDevices) => {
-                    this.devices().clear();
+
+                    this.startAdbServer.querySelector('.fa-play').classList.remove("visually-hidden");
+                    this.startAdbServer.querySelector('span.spinner-border').classList.add("visually-hidden");
+
                     if (adbDevices.error) {
                         switch (adbDevices.error.code) {
                             case "ENODEVICES":
+                                this.devices().clear();
                                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", `<option>${adbDevices.error.message}</option>`);
                                 this.startAdbServer.disabled = true;
-                                this.startAdbServer.querySelector('span.spinner-border').classList.add("visually-hidden");
                                 break;
                             case "ECONNREFUSED":
+                                this.devices().clear();
                                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", "<option>Server not running...</option>");
                                 this.startAdbServer.disabled = false;
                                 break;
@@ -90,7 +94,6 @@ class AdbDeviceController {
                             default:
                                 break;
                         }
-                        this.startAdbServer.querySelector('.fa-play').classList.remove("visually-hidden");
                         this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                         return;
                     }
@@ -98,6 +101,7 @@ class AdbDeviceController {
                     this.startAdbServer.disabled = true;
                     this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                     this.adbDeviceCountBadge.innerHTML = adbDevices.length;
+                    this.devices().clear();
                     await adbDevices.forEach((d) => this.devices().add(d));
                     if (this.activeDevice === "") return;
                     if (this.adbDeviceSelect.innerHTML.includes(this.activeDevice)) this.adbDeviceSelect.value = this.activeDevice;
