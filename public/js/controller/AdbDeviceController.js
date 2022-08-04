@@ -76,10 +76,11 @@ class AdbDeviceController {
                 track: async (adbDevices) => {
                     this.devices().clear();
                     if (adbDevices.error) {
-                        switch (adbDevices.error.name) {
-                            case "noDevicesError":
+                        switch (adbDevices.error.code) {
+                            case "ENODEVICES":
                                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", `<option>${adbDevices.error.message}</option>`);
                                 this.startAdbServer.disabled = true;
+                                this.startAdbServer.querySelector('span.spinner-border').classList.add("visually-hidden");
                                 break;
                             case "ECONNREFUSED":
                                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", "<option>Server not running...</option>");
@@ -89,6 +90,7 @@ class AdbDeviceController {
                             default:
                                 break;
                         }
+                        this.startAdbServer.querySelector('.fa-play').classList.remove("visually-hidden");
                         this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                         return;
                     }
@@ -115,6 +117,8 @@ class AdbDeviceController {
             },
             server: {
                 start: () => {
+                    this.startAdbServer.querySelector('span.spinner-border').classList.remove("visually-hidden");
+                    this.startAdbServer.querySelector('.fa-play').classList.add("visually-hidden");
                     window.adb.server.start();
                 },
                 stop: () => {
