@@ -64,8 +64,8 @@ const onDomReady = () => {
         .on("error", (error: NodeJS.ErrnoException) => {
             if (prevError.code !== error.code) {
                 prevError = error;
-                log.error("[Tracker:Error]", { error: { ...error, name: error.code ?? error.name, message: error.message } });
-                mainWindow.webContents.send("adb:track-devices", { error: { ...error, name: error.code ?? error.name, message: error.message } });
+                log.error("[Tracker:Error]", { error: { ...error } });
+                mainWindow.webContents.send("adb:track-devices", { error: { ...error } });
             }
         });
     mainWindow.webContents.send("rogcat:profile", profiler.getProfiles());
