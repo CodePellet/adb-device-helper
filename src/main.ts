@@ -1,12 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AdbDeviceTracker } from "adbdevicetracker";
-import { EnvController } from "./Modules/controller/adbdh-env-controller/adbdh-env-controller";
-import { RogcatProfiler } from "./Modules/adbdh-rogcat-profiler/adbdh-rogcat-profiler";
-import { app, BrowserWindow, BrowserWindowConstructorOptions, Menu } from "electron";
+import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron";
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
-import { preventOverflow } from "@popperjs/core/index";
+import { RogcatProfiler } from "./Modules/adbdh-rogcat-profiler";
+import { EnvController } from "./Modules/controller/adbdh-env-controller";
 
 
 let mainWindow: BrowserWindow;

@@ -3,7 +3,7 @@ import { shell } from "electron";
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
-import { EnvController } from "../adbdh-env-controller/adbdh-env-controller";
+import { EnvController } from "./adbdh-env-controller";
 
 interface AndroidDevice {
     serial: string;

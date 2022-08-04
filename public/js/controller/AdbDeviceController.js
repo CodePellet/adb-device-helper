@@ -1,3 +1,26 @@
+class AdbDevice {
+    /** @type {string} */
+    androidId;
+    /** @type {string} */
+    deviceState;
+    /** @type {string} */
+    product;
+    /** @type {string} */
+    model;
+    /** @type {string} */
+    device;
+    /** @type {string} */
+    transportId;
+    error = {
+        /** @type {string} */
+        name,
+        /**@type {string} */
+        code,
+        /** @type {string} */
+        message
+    };
+}
+
 class AdbDeviceController {
     constructor() {
         this.activeDevice = "";
@@ -71,7 +94,7 @@ class AdbDeviceController {
         return {
             devices: {
                 /**
-                 * @param {Object} adbDevices
+                 * @param {AdbDevice} adbDevices
                  */
                 track: async (adbDevices) => {
 

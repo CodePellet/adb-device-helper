@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { contextBridge, ipcRenderer } from "electron";
-import { ShellController } from "./Modules/controller/adbdh-shell-controller/adbdh-shell-controller";
-import { MacroController } from "./Modules/controller/adbdh-macro-controller/adbdh-macro-controller";
+import { ShellController } from "./Modules/controller/adbdh-shell-controller";
+import { MacroController } from "./Modules/controller/adbdh-macro-controller";
 
 const shellController: ShellController = ShellController.getInstance();
 const macroController: MacroController = MacroController.getInstance();

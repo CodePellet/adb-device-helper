@@ -3,7 +3,7 @@ import * as childProcess from "child_process";
 import * as db from "electron-db";
 import * as log from "electron-log";
 
-import { ShellController } from "../adbdh-shell-controller/adbdh-shell-controller"
+import { ShellController } from "./adbdh-shell-controller"
 
 const DATABASENAME = "macros";
 

@@ -60,7 +60,6 @@ export class RogcatProfiler {
         try {
             fs.accessSync(path.dirname(this.rogcatProfileFile), fs.constants.F_OK);
             fs.accessSync(this.rogcatProfileFile, fs.constants.R_OK || fs.constants.W_OK);
-            log.info("[RogcatProfiler]", "Profiles ");
         } catch (error) {
             log.error("[RogcatProfiler]", "No rogcat profiles found");
             log.error("[RogcatProfiler]", "Creating new profile file in", this.rogcatProfileFile);
