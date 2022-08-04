@@ -6,6 +6,7 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions, Menu } from "elect
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
+import { preventOverflow } from "@popperjs/core/index";
 
 
 let mainWindow: BrowserWindow;
@@ -50,6 +51,9 @@ const createWindow = () => {
 const onDomReady = () => {
     if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
     tracker.start();
+
+    let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
+
     tracker
         .on("info", message => {
             log.info(message);
@@ -58,8 +62,11 @@ const onDomReady = () => {
             mainWindow.webContents.send("adb:track-devices", adbDevices);
         })
         .on("error", (error: NodeJS.ErrnoException) => {
-            log.error("[Tracker:Error]", { error: { ...error, name: error.code ?? error.name, message: error.message } });
-            mainWindow.webContents.send("adb:track-devices", { error: { ...error, name: error.code ?? error.name, message: error.message } });
+            if (prevError.code !== error.code) {
+                prevError = error;
+                log.error("[Tracker:Error]", { error: { ...error, name: error.code ?? error.name, message: error.message } });
+                mainWindow.webContents.send("adb:track-devices", { error: { ...error, name: error.code ?? error.name, message: error.message } });
+            }
         });
     mainWindow.webContents.send("rogcat:profile", profiler.getProfiles());
 };
