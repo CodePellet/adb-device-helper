@@ -4,6 +4,7 @@ import Toast from "../components/Toast/Toast.js";
 
 class MacroController {
     constructor() {
+        this.adbDeviceSelect = document.getElementById("deviceSelect");
         this.profileSelect = document.getElementById("profile-select");
         this.removeProfileButton = document.querySelector(".btn-remove-profile");
 
@@ -75,6 +76,9 @@ class MacroController {
         return {
             macros: {
                 execute: (command) => {
+                    const deviceId = this.adbDeviceSelect.value;
+                    const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model")
+                    window.shell.setAndroidDevice(deviceId, deviceModel);
                     window.macros.execute(command, this.macros().showResults);
                 },
                 save: (macro = {}) => {
