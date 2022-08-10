@@ -5,6 +5,8 @@ import adbDeviceController from "./controller/AdbDeviceController.js";
 import profileController from "./controller/ProfileController.js";
 import "./controller/MacroController.js";
 
+
 // Pass reference of profileController to AdbDeviceController
 // Needed to know which profile is currently active
 adbDeviceController.setProfileControllerInstance(profileController);
+

@@ -86,7 +86,7 @@ class MacroController {
             macros: {
                 execute: (command) => {
                     const deviceId = this.adbDeviceSelect.value;
-                    const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model")
+                    const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model");
                     window.shell.setAndroidDevice(deviceId, deviceModel);
                     window.macros.execute(command, this.macros().showResults);
                 },
@@ -128,9 +128,12 @@ class MacroController {
                 this.toIpcMain().macros.delete(name);
             },
 
-            showResults(command, error, stdout, stderr) {
+            showResults: (command, error, stdout, stderr) => {
                 const elementId = Math.floor(Math.random() * 100000);
                 const tabPaneResults = document.getElementById("tabPaneResults");
+                const deviceId = this.adbDeviceSelect.value;
+                const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model")
+
                 /**
                  * @type String
                  */
@@ -141,7 +144,7 @@ class MacroController {
                     "beforeend",
                     `<div id="commandResultContainer_${elementId}" class="form-floating mb-2 d-flex align-items-center justify-content-center">
                         <div id="textarea_${elementId}" class="form-control ${commandResultBG}" style="user-select: text; height: fit-content; --bg">${commandResult.replaceAll("\n", "<br/>")}</div>
-                        <label for="testarea_${elementId}" >${command}</label>
+                        <label for="testarea_${elementId}" ><strong>Command:</strong> ${command} - <strong>Device:</strong> ${deviceId} <strong>Model:</strong> ${deviceModel}</label>
                         <div class="position-absolute end-0 top-0 d-flex p-2">
                             <a id="button_clip_${elementId}" class="btn p-1" type="button"><i class="fas fa-clipboard fa-fw "></i></a>
                             <a id="button_trash_${elementId}" class="btn p-1 text-danger" type="button"><i class="fas fa-trash fa-fw "></i></a>
@@ -167,7 +170,17 @@ class MacroController {
                     MacroListItem.clear(".adb-macro-list");
                     MacroListItem.clear(".ssh-macro-list");
 
-                    macroObj?.adb.forEach((t) => MacroListItem.append(".adb-macro-list", t));
+                    macroObj?.adb.forEach((t) => {
+
+                        const { execButton, deleteButton } = MacroListItem.append(".adb-macro-list", t);
+
+                        execButton.addEventListener("click", (element) => {
+                            const command = element.target.closest("li").querySelector("input[type=text]").value;
+                            this.macros().execute(command);
+                        });
+
+                        deleteButton.addEventListener("click", MacroListItem.delete);
+                    });
                     // ssh.forEach((m) => MacroListItem.append(".ssh-macro-list", m));
                 },
             },

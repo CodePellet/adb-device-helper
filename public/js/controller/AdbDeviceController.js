@@ -1,26 +1,3 @@
-class AdbDevice {
-    /** @type {string} */
-    androidId;
-    /** @type {string} */
-    deviceState;
-    /** @type {string} */
-    product;
-    /** @type {string} */
-    model;
-    /** @type {string} */
-    device;
-    /** @type {string} */
-    transportId;
-    error = {
-        /** @type {string} */
-        name,
-        /**@type {string} */
-        code,
-        /** @type {string} */
-        message
-    };
-}
-
 class AdbDeviceController {
     constructor() {
         this.activeDevice = "";
@@ -181,13 +158,8 @@ class AdbDeviceController {
     devices() {
         return {
             add: (d) => {
-                console.log("Device:", d);
-                const { androidId, model, error } = d;
-                let option = `<option data-adb-model="${model}" value="${androidId}">${androidId} - ${model}</option>`;
-                // if (error) {
-                //     option = `<option value="-1">No devices connected...</option>`;
-                //     this.adbDeviceCountBadge.innerHTML = 0;
-                // }
+                const { androidId, model } = d;
+                const option = `<option data-adb-model="${model}" value="${androidId}">${androidId} - ${model}</option>`;
                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", option);
                 this.adbDeviceCountBadge.classList.remove("visually-hidden");
             },

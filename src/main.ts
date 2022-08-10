@@ -25,7 +25,7 @@ const mainWindowOptions: BrowserWindowConstructorOptions = {
     autoHideMenuBar: true
 };
 
-const tracker = new AdbDeviceTracker();
+const tracker = AdbDeviceTracker.getInstance();
 const profiler = RogcatProfiler.getInstance();
 const env = EnvController.getInstance();
 
@@ -36,6 +36,7 @@ const createWindow = () => {
     mainWindow = new BrowserWindow(mainWindowOptions);
     // Load html into window
     mainWindow.loadFile(path.join(__dirname, "..", "public", "mainWindow2.html"));
+    mainWindow.removeMenu();
 
     if (!app.isPackaged) mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
 
@@ -44,20 +45,20 @@ const createWindow = () => {
     mainWindow.on("closed", () => app.quit());
 
     mainWindow.webContents.on("dom-ready", onDomReady);
-
 }
 
+let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
 const onDomReady = () => {
     if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
-    tracker.start();
 
-    let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
+    tracker.start();
 
     tracker
         .on("info", message => {
             log.info(message);
         })
         .on("data", adbDevices => {
+            console.log(adbDevices);
             prevError = { name: "", message: "", code: "" };
             mainWindow.webContents.send("adb:track-devices", adbDevices);
         })
