@@ -1,4 +1,3 @@
-import MacroController from "../../controller/MacroController.js";
 export default class MacroListItem {
     static getActiveList() {
         return document.querySelector(".macro-tabs .nav-link.active").getAttribute("data-bs-target");
@@ -30,13 +29,7 @@ export default class MacroListItem {
                 </div>
             </li>`
         );
-        listContainer.querySelector("li:last-child button.btn-run-macro-item").addEventListener("click", MacroListItem.execute);
-        listContainer.querySelector("li:last-child button.btn-remove-macro-item").addEventListener("click", MacroListItem.delete);
-    }
-
-    static execute(listitem) {
-        const command = listitem.target.closest("li").querySelector("input[type=text]").value;
-        MacroController.macros().execute(command);
+        return { execButton: listContainer.querySelector("li:last-child button.btn-run-macro-item"), deleteButton: listContainer.querySelector("li:last-child button.btn-remove-macro-item") }
     }
 
     static clear(selector) {

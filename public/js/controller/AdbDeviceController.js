@@ -96,7 +96,7 @@ class AdbDeviceController {
                 /**
                  * @param {AdbDevice} adbDevices
                  */
-                track: async (adbDevices) => {
+                track: (adbDevices) => {
 
                     this.startAdbServer.querySelector('.fa-play').classList.remove("visually-hidden");
                     this.startAdbServer.querySelector('span.spinner-border').classList.add("visually-hidden");
@@ -107,6 +107,8 @@ class AdbDeviceController {
                                 this.devices().clear();
                                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", `<option>${adbDevices.error.message}</option>`);
                                 this.startAdbServer.disabled = true;
+                                this.adbDeviceCountBadge.innerHTML = 0;
+
                                 break;
                             case "ECONNREFUSED":
                                 this.devices().clear();
@@ -125,7 +127,7 @@ class AdbDeviceController {
                     this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                     this.adbDeviceCountBadge.innerHTML = adbDevices.length;
                     this.devices().clear();
-                    await adbDevices.forEach((d) => this.devices().add(d));
+                    adbDevices.forEach((d) => this.devices().add(d));
                     if (this.activeDevice === "") return;
                     if (this.adbDeviceSelect.innerHTML.includes(this.activeDevice)) this.adbDeviceSelect.value = this.activeDevice;
                 },
@@ -179,12 +181,13 @@ class AdbDeviceController {
     devices() {
         return {
             add: (d) => {
+                console.log("Device:", d);
                 const { androidId, model, error } = d;
                 let option = `<option data-adb-model="${model}" value="${androidId}">${androidId} - ${model}</option>`;
-                if (error) {
-                    option = `<option value="-1">No devices connected...</option>`;
-                    this.adbDeviceCountBadge.innerHTML = 0;
-                }
+                // if (error) {
+                //     option = `<option value="-1">No devices connected...</option>`;
+                //     this.adbDeviceCountBadge.innerHTML = 0;
+                // }
                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", option);
                 this.adbDeviceCountBadge.classList.remove("visually-hidden");
             },

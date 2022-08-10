@@ -31,15 +31,24 @@ class MacroController {
     eventListeners() {
         return {
             newListItemButton: {
-                click: () => MacroListItem.append(),
+                click: () => {
+                    const { execButton, deleteButton } = MacroListItem.append();
+
+                    execButton.addEventListener("click", (element) => {
+                        const command = element.target.closest("li").querySelector("input[type=text]").value;
+                        this.macros().execute(command);
+                    });
+
+                    deleteButton.addEventListener("click", MacroListItem.delete);
+                },
             },
             saveChangesButton: {
                 click: () => this.macros().saveChanges(),
             },
             tabs: {
                 resultsTab: {
-                    shown: () => this.newMacroItemButton.disabled = true,
-                    hidden: () => this.newMacroItemButton.disabled = false
+                    shown: () => { this.newMacroItemButton.disabled = true },
+                    hidden: () => { this.newMacroItemButton.disabled = false }
                 }
             },
             profileSelect: {
@@ -102,7 +111,7 @@ class MacroController {
                 // let comment = document.querySelector(".rogcat-profile-comment input[type=text]").value;
                 const comment = "";
                 const adbMacros = document.querySelectorAll(".adb-macro-list input[type=text]");
-                const sshMacros = document.querySelectorAll(".ssh-macro-list input[type=text]");
+                // const sshMacros = document.querySelectorAll(".ssh-macro-list input[type=text]");
 
                 this.toIpcMain().macros.save({
                     name: profileName,
@@ -140,20 +149,20 @@ class MacroController {
                      </div>`
                 );
 
-                document.getElementById(`button_clip_${elementId}`).addEventListener("click", e => {
+                document.getElementById(`button_clip_${elementId}`).addEventListener("click", () => {
                     navigator.clipboard.writeText(commandResult);
                     Toast.showCopiedToClipboardToast();
                 });
 
-                document.getElementById(`button_trash_${elementId}`).addEventListener("click", e => {
+                document.getElementById(`button_trash_${elementId}`).addEventListener("click", () => {
                     document.getElementById(`commandResultContainer_${elementId}`).remove();
                 });
             },
 
             macroItems: {
                 show: (profile) => {
-                    this.activeProfile = this.profileSelect.selectedIndex == -1 ? "default" : profile;
-                    const macroObj = this.macro.find(macro => macro.name == this.activeProfile);
+                    this.activeProfile = this.profileSelect.selectedIndex === -1 ? "default" : profile;
+                    const macroObj = this.macro.find(macro => macro.name === this.activeProfile);
 
                     MacroListItem.clear(".adb-macro-list");
                     MacroListItem.clear(".ssh-macro-list");
