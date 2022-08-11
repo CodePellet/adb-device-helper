@@ -5,10 +5,12 @@ export default class MacroListItem {
 
     /**
      * @param {String} listContainer - Optional - The querySelector for the list container
-     * @param {string} [filterValue=''] - Optional - The value to write to the filter input
+     * @param {String} [filterValue=''] - Optional - The value to write to the filter input
+     * @param {Function)} execButtonClickEvent - Function to call, when execute button is clicked
+     * @param {Function} deleteButtonClickEvent - Function to call, when delete button is clicked
      * @memberof MacroListItem
      */
-    static append(selector = `${MacroListItem.getActiveList()} > ul`, filterValue = "") {
+    static append(selector = `${MacroListItem.getActiveList()} > ul`, filterValue = "", execButtonClickEvent, deleteButtonClickEvent) {
         const listContainer = document.querySelector(selector);
         listContainer.insertAdjacentHTML(
             "beforeend",
@@ -29,7 +31,15 @@ export default class MacroListItem {
                 </div>
             </li>`
         );
-        return { execButton: listContainer.querySelector("li:last-child button.btn-run-macro-item"), deleteButton: listContainer.querySelector("li:last-child button.btn-remove-macro-item") }
+
+        listContainer.querySelector("li:last-child button.btn-run-macro-item").addEventListener("click", (element) => {
+            const command = element.target.closest("li").querySelector("input[type=text]").value;
+            execButtonClickEvent(command);
+        });
+        listContainer.querySelector("li:last-child button.btn-remove-macro-item").addEventListener("click", deleteButtonClickEvent);
+
+
+        // return { execButton: listContainer.querySelector("li:last-child button.btn-run-macro-item"), deleteButton: listContainer.querySelector("li:last-child button.btn-remove-macro-item") }
     }
 
     static clear(selector) {

@@ -32,14 +32,7 @@ class MacroController {
         return {
             newListItemButton: {
                 click: () => {
-                    const { execButton, deleteButton } = MacroListItem.append();
-
-                    execButton.addEventListener("click", (element) => {
-                        const command = element.target.closest("li").querySelector("input[type=text]").value;
-                        this.macros().execute(command);
-                    });
-
-                    deleteButton.addEventListener("click", MacroListItem.delete);
+                    MacroListItem.append(".adb-macro-list", "", this.macros().execute, MacroListItem.delete);
                 },
             },
             saveChangesButton: {
@@ -171,15 +164,7 @@ class MacroController {
                     MacroListItem.clear(".ssh-macro-list");
 
                     macroObj?.adb.forEach((t) => {
-
-                        const { execButton, deleteButton } = MacroListItem.append(".adb-macro-list", t);
-
-                        execButton.addEventListener("click", (element) => {
-                            const command = element.target.closest("li").querySelector("input[type=text]").value;
-                            this.macros().execute(command);
-                        });
-
-                        deleteButton.addEventListener("click", MacroListItem.delete);
+                        MacroListItem.append(".adb-macro-list", t, this.macros().execute, MacroListItem.delete);
                     });
                     // ssh.forEach((m) => MacroListItem.append(".ssh-macro-list", m));
                 },
