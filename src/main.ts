@@ -1,11 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AdbDeviceTracker } from "adbdevicetracker";
-import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron";
+import { app, BrowserWindow, BrowserWindowConstructorOptions, Menu, MenuItemConstructorOptions, shell } from "electron";
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
 import { RogcatProfiler } from "./Modules/adbdh-rogcat-profiler";
 import { EnvController } from "./Modules/controller/adbdh-env-controller";
+import { Views, ViewType } from "./views/views"
 
 
 let mainWindow: BrowserWindow;
@@ -22,12 +23,36 @@ const mainWindowOptions: BrowserWindowConstructorOptions = {
         contextIsolation: true,
         preload: path.join(__dirname, "preload.js"),
     },
-    autoHideMenuBar: true
+    autoHideMenuBar: false,
 };
 
 const tracker = AdbDeviceTracker.getInstance();
 const profiler = RogcatProfiler.getInstance();
 const env = EnvController.getInstance();
+const views = Views.getInstance();
+
+const mainMenuTemplate: MenuItemConstructorOptions[] = [
+    {
+        role: "fileMenu",
+        submenu: [
+            {
+                label: "Settings",
+                click: () => { views.showView(ViewType.SETTINGS, mainWindow) }
+            },
+            { role: "quit" }
+        ]
+    },
+    {
+        role: "help",
+        submenu: [
+            {
+                label: "View on GitHub",
+                click: () => { shell.openExternal("https://github.com/CodePellet/adb-device-helper") }
+            }
+        ]
+    }
+]
+
 
 log.debug("[Main]", "Setting up environment");
 env.setup();
@@ -35,8 +60,8 @@ env.setup();
 const createWindow = () => {
     mainWindow = new BrowserWindow(mainWindowOptions);
     // Load html into window
-    mainWindow.loadFile(path.join(__dirname, "..", "public", "mainWindow2.html"));
-    mainWindow.removeMenu();
+    mainWindow.loadFile(path.join(__dirname, "..", "public", "views", "main.html"));
+    mainWindow.setMenu(Menu.buildFromTemplate(mainMenuTemplate))
 
     if (!app.isPackaged) mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
 
