@@ -1,8 +1,5 @@
-import { BrowserWindow, Settings } from "electron";
+import { app, BrowserWindow } from "electron";
 import path from "path";
-
-
-
 
 export class SettingsView {
     public static _instance: SettingsView;
@@ -17,7 +14,9 @@ export class SettingsView {
         this.settingsWindow = new BrowserWindow({
             parent: parent,
             title: "Settings",
-            autoHideMenuBar: true
+            icon: path.join(app.getAppPath(), "assets", "icons", "win", "icon.ico"),
+            autoHideMenuBar: true,
+            modal: true
         });
         this.settingsWindow.loadFile(path.join(__dirname, "..", "..", "public", "views", "settings.html"));
         this.settingsWindow.show();
