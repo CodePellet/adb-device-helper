@@ -20,3 +20,16 @@
     color: #fff !important;
     background-color: #212529;
 }
+
+/* Setting Window Custom styles*/
+.settings.nav-link:not(.active) {
+    background-color: transparent;
+    border-radius: 0;
+    border-bottom: 1px solid transparent;
+}
+
+.nav-pills .settings.nav-link.active {
+    background-color: transparent;
+    border-radius: 0;
+    border-bottom: 1px solid orange;
+}
