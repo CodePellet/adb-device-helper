@@ -129,9 +129,11 @@ class ProfileController {
 
                 this.toIpcMain().profile.saveChanges({
                     name: profileName,
-                    comment,
-                    tag: Array.from(tags, (tag) => tag.value).filter((t) => t !== ""),
-                    message: Array.from(messages, (message) => message.value).filter((m) => m !== ""),
+                    data: {
+                        comment,
+                        tag: Array.from(tags, (tag) => tag.value).filter((t) => t !== ""),
+                        message: Array.from(messages, (message) => message.value).filter((m) => m !== ""),
+                    }
                 });
             },
 
