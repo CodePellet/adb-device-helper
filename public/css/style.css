@@ -15,21 +15,22 @@
         sans-serif;
 }
 
-.nav-pills .nav-link.active,
-.nav-pills .show>.nav-link {
+.nav-pills .nav-link.active {
     color: #fff !important;
     background-color: #212529;
-    border-radius: 0;
-    border-left: 1px solig orange;
 }
 
-/* Setting Window Custom styles*/
-.settings.nav-link:not(.active) {
+.nav-link:not(.active) {
     background-color: transparent;
+}
+
+/* Settings Window Styles */
+.settings.nav-link.active {
+    border-radius: 0;
+    border-bottom: 1px solid orange;
+}
+
+.settings.nav-link:not(.active) {
     border-radius: 0;
     border-bottom: 1px solid transparent;
-}
-
-.nav-pills .settings.nav-link.active {
-    border-bottom: 1px solid orange;
 }
