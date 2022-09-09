@@ -94,7 +94,6 @@ const onDomReady = () => {
                 mainWindow.webContents.send("adb:track-devices", { error: { ...error } });
             }
         });
-    mainWindow.webContents.send("rogcat:profile", profiler.getProfiles());
 };
 
 // Listen for app to be ready
