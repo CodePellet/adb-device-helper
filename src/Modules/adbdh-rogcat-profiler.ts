@@ -21,7 +21,6 @@ interface RogcatProfile {
 
 }
 
-
 export class RogcatProfiler {
 
     private static _instance: RogcatProfiler;
@@ -37,14 +36,10 @@ export class RogcatProfiler {
 
         this.setup = this.setup.bind(this);
         this.getProfiles = this.getProfiles.bind(this);
-        this.saveProfilesToFile = this.saveProfilesToFile.bind(this);
-        this.createProfile = this.createProfile.bind(this);
-        this.updateProfile = this.updateProfile.bind(this);
-        this.deleteProfile = this.deleteProfile.bind(this);
-
-        ipcMain.on("rogcat:profile-create", this.createProfile);
-        ipcMain.on("rogcat:profile-update", this.updateProfile);
-        ipcMain.on("rogcat:profile-delete", this.deleteProfile);
+        this.writeToFile = this.writeToFile.bind(this);
+        this.create = this.create.bind(this);
+        this.save = this.save.bind(this);
+        this.delete = this.delete.bind(this);
 
         this.setup();
     }
@@ -77,28 +72,33 @@ export class RogcatProfiler {
         return this.tomlProfiles;
     }
 
-    private saveProfilesToFile(profiles: JsonMap): void {
-        fs.writeFileSync(this.rogcatProfileFile, toml.stringify(profiles));
+    private writeToFile(profiles: JsonMap): boolean {
+        try {
+            fs.writeFileSync(this.rogcatProfileFile, toml.stringify(profiles));
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
-    public createProfile(event: IpcMainEvent, profile: RogcatProfile): void {
+    public create(profile: RogcatProfile): any {
         this.tomlProfiles.profile = { ...this.tomlProfiles.profile, [profile.name]: { ...profile.data } };
-        this.saveProfilesToFile(this.tomlProfiles);
-        event.reply("rogcat:profile", this.getProfiles());
+        this.writeToFile(this.tomlProfiles);
+        return this.getProfiles();
     }
 
-    public updateProfile(event: IpcMainEvent, profile: RogcatProfile): void {
+    public save(profile: RogcatProfile): { success: boolean, data: Object } {
         const rogcatProfiles = this.getProfiles();
         rogcatProfiles.profile[profile.name].comment = profile.data.comment;
         rogcatProfiles.profile[profile.name].tag = profile.data.tag;
         rogcatProfiles.profile[profile.name].message = profile.data.message;
-        this.saveProfilesToFile(rogcatProfiles);
-        event.reply("rogcat:profile-update", this.getProfiles());
+        const writeSuccess = this.writeToFile(rogcatProfiles);
+        return { success: writeSuccess, data: this.getProfiles() };
     }
 
-    public deleteProfile(event: IpcMainEvent, profileName: string): void {
+    public delete(profileName: string): any {
         delete this.tomlProfiles.profile[profileName];
-        this.saveProfilesToFile(this.tomlProfiles);
-        event.reply("rogcat:profile", this.getProfiles());
+        this.writeToFile(this.tomlProfiles);
+        return this.getProfiles();
     }
 }

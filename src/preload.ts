@@ -2,9 +2,11 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { ShellController } from "./Modules/controller/adbdh-shell-controller";
 import { MacroController } from "./Modules/controller/adbdh-macro-controller";
+import { RogcatProfiler } from "./Modules/adbdh-rogcat-profiler";
 
 const shellController: ShellController = ShellController.getInstance();
 const macroController: MacroController = MacroController.getInstance();
+const profiler: RogcatProfiler = RogcatProfiler.getInstance();
 
 contextBridge.exposeInMainWorld("adb", {
     track: (callback: Function) => ipcRenderer.on("adb:track-devices", (event, ...args) => callback(...args)),
@@ -16,15 +18,7 @@ contextBridge.exposeInMainWorld("adb", {
 
 contextBridge.exposeInMainWorld("shell", shellController);
 
-contextBridge.exposeInMainWorld("rogcat", {
-    profile: {
-        get: (callback: Function) => ipcRenderer.on("rogcat:profile", (event, ...args) => callback(...args)),
-        update: (callback: Function) => ipcRenderer.on("rogcat:profile-update", (event, ...args) => callback(...args)),
-        create: (profile: any) => ipcRenderer.send("rogcat:profile-create", profile),
-        saveChanges: (profile: any) => ipcRenderer.send("rogcat:profile-update", profile),
-        delete: (profile: any) => ipcRenderer.send("rogcat:profile-delete", profile),
-    },
-});
+contextBridge.exposeInMainWorld("profiler", profiler);
 
 contextBridge.exposeInMainWorld("macros", {
     get: (callback: (arg0: any) => any) => callback(macroController.getMacros()), // ipcRenderer.on("macros:get", (event, ...args) => callback(...args)),
