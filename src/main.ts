@@ -4,9 +4,9 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions, Menu, MenuItemCons
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
-import { RogcatProfiler } from "./Modules/adbdh-rogcat-profiler";
+import "./handler/ipcMainHandler";
 import { EnvController } from "./Modules/controller/adbdh-env-controller";
-import { Views, ViewType } from "./views/views"
+import { Views, ViewType } from "./views/views";
 
 
 let mainWindow: BrowserWindow;
@@ -27,7 +27,6 @@ const mainWindowOptions: BrowserWindowConstructorOptions = {
 };
 
 const tracker = AdbDeviceTracker.getInstance();
-const profiler = RogcatProfiler.getInstance();
 const env = EnvController.getInstance();
 const views = Views.getInstance();
 

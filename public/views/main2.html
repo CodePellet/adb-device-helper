@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script defer src="../js/script.js" type="module"></script>
+</head>
+
+<body>
+
+  <!-- Toasts -->
+  <div id="toast_container" class="toast-container position-fixed bottom-0 start-0 p-3" style="z-index: 9999;">
+  </div>
+
+  <div class="container-fluid vh-100 d-flex flex-column bg-dark">
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="d-flex w-100 gap-3 p-2">
+        <label class="input-group-text bg-dark text-light border-0 border-bottom rounded-0"
+          for="deviceSelect">Device</label>
+        <div class="input-group">
+          <select class="form-select" id="deviceSelect"></select>
+          <!-- Put empty container behind select to be able to show a badge counter for the connected devices -->
+          <span class="position-relative" style="z-index: 1000;">
+            <span id="adbDeviceCountBadge"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"></span>
+          </span>
+          <button id="startAdbServerButton" class="btn btn-success" type="button" disabled>
+            <span class="spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"
+              style="width: 1.25rem; height: 1.25rem; display: flex; align-items: center; justify-content: center;"></span>
+            <i class="fas fa-play fa-fw"></i>
+          </button>
+          <button id="stopAdbServerButton" class="btn btn-danger" type="button" disabled>
+            <i class="fas fa-stop fa-fw"></i></button>
+        </div>
+        <label class="input-group-text bg-dark text-light border-0 border-bottom rounded-0"
+          for="profileSelect">Profile</label>
+        <div class="input-group">
+          <select class="form-select" id="profile-select">
+            <optgroup label="Default Profile" class="profile-select-default-group"></optgroup>
+            <optgroup label="Custom Profiles" class="profile-select-custom-group"></optgroup>
+          </select>
+          <input class="form-control visually-hidden" type="text" name="newProfileName" id="newProfileName"
+            placeholder="Profile name"
+            onkeyup="if (event.key == 'Enter') document.querySelector('.btn-add-profile').click();">
+          <button class="btn btn-outline-primary bg-primary text-light btn-add-profile" type="button">
+            <i class="fas fa-plus fa-fw"></i>
+          </button>
+          <button class="btn btn-outline-danger bg-danger text-light btn-remove-profile" type="button">
+            <i class="fas fa-trash fa-fw"></i>
+          </button>
+        </div>
+      </div>
+
+    </nav>
+    <div class="container-fluid d-flex flex-column bg-dark h-100 p-0">
+      <div class="d-flex">
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link text-light active" id="main-rogcat-tab" data-bs-toggle="tab"
+              data-bs-target="#tabpane-rogcat" type="button" role="tab" aria-current="true" href="#">Rogcat</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link text-light" id="main-macros-tab" data-bs-toggle="tab"
+              data-bs-target="#tabpane-macros" type="button" role="tab" href="#">Macros</button>
+          </li>
+        </ul>
+        <div class="ms-auto d-flex align-items-center btn-group">
+          <button id="saveChanges" class="btn btn-primary">
+            <i class="fas fa-save fa-fw"></i>
+            <span>Save</span>
+          </button>
+          <button id="newListItem" class="btn btn-primary">
+            <i class="fas fa-plus fa-fw"></i>
+            <span>New</span>
+          </button>
+        </div>
+      </div>
+
+
+      <div class="tab-content flex-grow-1">
+        <!-- Rogcat Tab Content -->
+        <div class="tab-pane text-light active" id="tabpane-rogcat" role="tabpanel" aria-labelledby="tabpane-rogcat">
+          <main class="h-100 flex-grow-1 p-0 overflow-auto">
+            <div class="card h-100 rounded-0 border-0">
+              <div class="card-header d-flex bg-dark rounded-0 px-0">
+                <ul class="nav nav-pills card-header-tabs rogcat-filter-tabs" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link text-light active" data-bs-toggle="tab" data-bs-target="#tabPaneTags"
+                      aria-current="true" href="#">
+                      Tags
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link text-light" data-bs-toggle="tab" data-bs-target="#tabPaneMessages"
+                      href="#">Messages</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body bg-dark overflow-auto">
+                <div class="tab-content">
+                  <div class="tab-pane active" id="tabPaneTags" role="tabpanel" aria-labelledby="tags-tab">
+                    <ul class="list-group list-group-flush tag-list bg-dark"></ul>
+                  </div>
+                  <div class="tab-pane" id="tabPaneMessages" role="tabpanel" aria-labelledby="messages-tab">
+                    <ul class="list-group list-group-flush message-list"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+        <!-- Macros Tab Content -->
+        <div class="tab-pane text-light pt-2 h-100" id="tabpane-macros" role="tabpanel"
+          aria-labelledby="settings-export-import-tab">
+          Macros Tab content
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+  <!-- Main container -->
+  <div class="container-fluid vh-100 vw-100 d-flex align-items-center justify-content-center m-0 p-0 bg-dark">
+    <section class="w-100 h-100 p-2 d-flex flex-column start-0">
+      <header class="
+            container-fluid
+            p-0
+            m-0
+            mb-3
+            d-flex
+            align-items-center
+            bg-dark
+            rounded-2
+            justify-content-around
+          ">
+        <div class="container-fluid d-flex p-2 m-0 bg-light rounded-2 align-items-center justify-content-between">
+          <div class="d-flex flex-column" style="width: 500px;">
+            <div class="input-group mb-2">
+              <label class="input-group-text bg-dark text-light border-dark" for="deviceSelect"
+                style="width: 75px">Device</label>
+              <select class="form-select" id="deviceSelect"></select>
+              <!-- Put empty container behind select to be able to show a badge counter for the connected devices -->
+              <span class="position-relative" style="z-index: 1000;">
+                <span id="adbDeviceCountBadge"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"></span>
+              </span>
+              <button id="startAdbServerButton" class="btn btn-success" type="button" disabled>
+                <span class="spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"
+                  style="width: 1.25rem; height: 1.25rem; display: flex; align-items: center; justify-content: center;"></span>
+                <i class="fas fa-play fa-fw"></i>
+              </button>
+              <button id="stopAdbServerButton" class="btn btn-danger" type="button" disabled>
+                <i class="fas fa-stop fa-fw"></i></button>
+            </div>
+            <div class="d-flex">
+              <div class="input-group">
+                <label class="input-group-text bg-dark text-light border-dark" for="profileSelect"
+                  style="width: 75px">Profile</label>
+                <select class="form-select" id="profile-select">
+                  <optgroup label="Default Profile" class="profile-select-default-group"></optgroup>
+                  <optgroup label="Custom Profiles" class="profile-select-custom-group"></optgroup>
+                </select>
+                <input class="form-control visually-hidden" type="text" name="newProfileName" id="newProfileName"
+                  placeholder="Profile name"
+                  onkeyup="if (event.key == 'Enter') document.querySelector('.btn-add-profile').click();">
+                <button class="btn btn-outline-primary bg-primary text-light btn-add-profile" type="button">
+                  <i class="fas fa-plus fa-fw"></i>
+                </button>
+                <button class="btn btn-outline-danger bg-danger text-light btn-remove-profile" type="button">
+                  <i class="fas fa-trash fa-fw"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="d-flex w-100 h-100 mb-3 overflow-auto">
+        <ul class="nav nav-pills bg-light rounded-start flex-column function-tabs p-0" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneFilter"
+              aria-current="true">
+              <i class="fas fa-filter fa-fw"></i>
+              <span>Rogcat</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneMacros">
+              <i class="fas fa-laptop-code fa-fw"></i>
+              <span>Macros</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content flex-grow-1">
+          <!-- Filter Panel -->
+          <div class="tab-pane h-100 active" id="tabPaneFilter" role="tabpanel" aria-labelledby="filter-tab">
+            <main class="h-100 flex-grow-1 rounded-end p-0 overflow-auto">
+              <div class="card h-100 rounded-0">
+                <div class="card-header d-flex position-relative">
+                  <ul class="nav nav-tabs card-header-tabs rogcat-filter-tabs" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneTags"
+                        aria-current="true" href="#">
+                        Tags
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneMessages"
+                        href="#">Messages</a>
+                    </li>
+                  </ul>
+                  <div class="d-flex align-items-center position-absolute top-50 bottom-50 end-0 me-3 btn-group">
+                    <button id="saveChanges" class="btn btn-primary">
+                      <i class="fas fa-save fa-fw"></i>
+                      <span>Save</span>
+                    </button>
+                    <button id="newListItem" class="btn btn-primary">
+                      <i class="fas fa-plus fa-fw"></i>
+                      <span>New</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body overflow-auto">
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="tabPaneTags" role="tabpanel" aria-labelledby="tags-tab">
+                      <ul class="list-group list-group-flush tag-list"></ul>
+                    </div>
+                    <div class="tab-pane" id="tabPaneMessages" role="tabpanel" aria-labelledby="messages-tab">
+                      <ul class="list-group list-group-flush message-list"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
+          </div>
+          <!-- Macro Panel -->
+          <div class="tab-pane h-100" id="tabPaneMacros" role="tabpanel" aria-labelledby="macros-tab">
+            <main class="bg-light h-100 flex-grow-1 rounded-end p-0 overflow-auto">
+              <div class="card h-100 rounded-0">
+                <div class="card-header d-flex position-relative">
+                  <ul class="nav nav-tabs card-header-tabs macro-tabs" role="tablist">
+                    <li class="nav-item">
+                      <button class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneAdb"
+                        aria-current="true">
+                        ADB
+                      </button>
+                    </li>
+                    <li class="nav-item" hidden>
+                      <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneSsh">SSH</button>
+                    </li>
+                    <li class="nav-item">
+                      <button class="nav-link text-dark" data-bs-toggle="tab"
+                        data-bs-target="#tabPaneResults">Results</button>
+                    </li>
+                  </ul>
+                  <div class="d-flex align-items-center position-absolute top-50 bottom-50 end-0 me-3 btn-group">
+                    <button id="saveMacroChanges" class="btn btn-primary">
+                      <i class="fas fa-save fa-fw"></i>
+                      <span>Save</span>
+                    </button>
+                    <button id="newMacroItem" class="btn btn-primary">
+                      <i class="fas fa-plus fa-fw"></i>
+                      <span>New</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body overflow-auto">
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="tabPaneAdb" role="tabpanel" aria-labelledby="adb-tab">
+                      <ul class="list-group list-group-flush adb-macro-list"></ul>
+                    </div>
+                    <div class="tab-pane" id="tabPaneSsh" role="tabpanel" aria-labelledby="ssh-tab">
+                      <ul class="list-group list-group-flush ssh-macro-list"></ul>
+                    </div>
+                    <div class="tab-pane" id="tabPaneResults" role="tabpanel" aria-labelledby="results-tab"></div>
+                  </div>
+                </div>
+              </div>
+
+            </main>
+          </div>
+        </div>
+      </div>
+      <footer class="
+            container-fluid
+            p-2
+            d-flex
+            align-items-center
+            justify-content-end
+            bg-light
+            rounded-2
+          ">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-dark btn-lg btn-start-rogcat">
+            <i class="fa fa-rocket fa-fw fa-lg rogcat-icon" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-dark btn-lg btn-local-shell">
+            <i class="fab fa-windows fa-fw fa-lg local-shell-icon"></i>
+          </button>
+          <button type="button" class="btn btn-dark btn-lg btn-device-shell">
+            <i class="fas fa-microchip fa-fw fa-lg device-shell-icon"></i>
+          </button>
+        </div>
+      </footer>
+    </section>
+  </div>
+</body>
+
+</html>
