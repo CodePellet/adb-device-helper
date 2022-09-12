@@ -14,6 +14,8 @@ export class SettingsView {
         this.settingsWindow = new BrowserWindow({
             parent: parent,
             title: "Settings",
+            height: 600,
+            width: 1000,
             icon: path.join(app.getAppPath(), "assets", "icons", "win", "icon.ico"),
             autoHideMenuBar: true,
             modal: true,
