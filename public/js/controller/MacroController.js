@@ -6,7 +6,6 @@ class MacroController {
     constructor() {
         this.adbDeviceSelect = document.getElementById("deviceSelect");
         this.profileSelect = document.getElementById("profile-select");
-        this.removeProfileButton = document.querySelector(".btn-remove-profile");
 
         this.saveChangesButton = document.getElementById("saveMacroChanges");
         this.newMacroItemButton = document.getElementById("newMacroItem");
@@ -17,10 +16,8 @@ class MacroController {
         this.macros = this.macros.bind(this);
 
         window.macros.get(this.fromIpcMain().macros.get);
-        // window.macros.update(this.fromIpcMain().macros.update);
 
         this.profileSelect.addEventListener("change", this.eventListeners().profileSelect.change);
-        this.removeProfileButton.addEventListener("click", this.eventListeners().removeProfileButton.click);
 
         this.newMacroItemButton.addEventListener("click", this.eventListeners().newListItemButton.click);
         this.saveChangesButton.addEventListener("click", this.eventListeners().saveChangesButton.click);
@@ -49,11 +46,6 @@ class MacroController {
                     const { value } = e.target;
                     this.macros().macroItems.show(value);
                 },
-            },
-            removeProfileButton: {
-                click: () => {
-                    this.macros().delete(this.profileSelect.value)
-                }
             }
         };
     }
@@ -117,9 +109,7 @@ class MacroController {
                 this.toIpcMain().macros.execute(command);
             },
 
-            delete: (name) => {
-                this.toIpcMain().macros.delete(name);
-            },
+            delete: (name) => { this.toIpcMain().macros.delete(name); },
 
             showResults: (command, error, stdout, stderr) => {
                 const elementId = Math.floor(Math.random() * 100000);

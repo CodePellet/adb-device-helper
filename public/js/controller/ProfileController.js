@@ -1,6 +1,7 @@
 /* eslint-disable import/extensions */
 import ListFilterItem from "../components/ListFilterItem/ListFilterItem.js";
 import Toast from "../components/Toast/Toast.js";
+import MacroController from "./MacroController.js";
 
 class ProfileController {
     constructor() {
@@ -56,7 +57,7 @@ class ProfileController {
                     profileSelect.classList.remove("visually-hidden");
                     newProfileNameInput.classList.add("visually-hidden");
                     newProfileIcon.classList.toggle("fa-plus");
-                    if (newProfileNameInput.value !== "") this.profiles().create(newProfileNameInput.value);
+                    if (newProfileNameInput.value !== "") this.profiles.create(newProfileNameInput.value);
                     newProfileNameInput.value = "";
                 }
             },
@@ -78,13 +79,15 @@ class ProfileController {
         },
 
         create: (name, comment = "", tag = [], message = []) => {
-            window.profiler.create({
-                [name]: {
+            this.tomlProfiles = window.profiler.create({
+                name,
+                data: {
                     comment,
                     tag,
                     message,
                 },
             });
+            this.profiles.addProfilesToSelectMenu();
         },
 
         saveChanges: () => {
@@ -113,7 +116,11 @@ class ProfileController {
             return this.tomlProfiles;
         },
 
-        delete: (name) => { window.profiler.delete(name); },
+        delete: (name) => {
+            this.tomlProfiles = window.profiler.delete(name);
+            MacroController.macros().delete(name);
+            this.profiles.addProfilesToSelectMenu();
+        },
 
         addProfilesToSelectMenu: () => {
             const { profile } = this.tomlProfiles;
