@@ -28,7 +28,19 @@ class Toast {
                             </div>
                             <div class="toast-body">Saved!</div>
                         </div>`;
-            }
+            },
+
+            importToast: () => {
+                return `<div id="importToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="toast-header">
+                                <div class="rounded p-2 me-2 bg-success" alt="..."></div>
+                                <strong class="me-auto">Success</strong>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">Profiles imported successfully!</div>
+                        </div>`;
+            },
+
         }
     }
 
@@ -50,7 +62,16 @@ class Toast {
         this._showToast(`saveToast`);
     }
 
-    _disposeToast(toastEl){
+    showImportToast() {
+        if (document.getElementById("importToast") == null)
+            this.toastContainer.insertAdjacentHTML(
+                "beforeend",
+                this.ToastTemplates().importToast()
+            );
+        this._showToast(`importToast`);
+    }
+
+    _disposeToast(toastEl) {
         toastEl.addEventListener("hidden.bs.toast", () => {
             toastEl.remove();
         })

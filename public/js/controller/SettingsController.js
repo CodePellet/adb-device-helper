@@ -1,3 +1,4 @@
+import Toast from "../components/Toast/Toast.js";
 
 class SettingsController {
 
@@ -23,7 +24,10 @@ class SettingsController {
                 importProfile: {
                     click: async (event) => {
                         const { success, data } = await window.profiler.importProfiles();
-                        if (success) this.getProfiles(data);
+                        if (success) {
+                            this.getProfiles(data)
+                            Toast.showImportToast();
+                        };
                     }
                 },
                 exportProfile: {
