@@ -114,6 +114,6 @@ export class ShellController {
 
     openTraceLocation() {
         if (!fs.existsSync(this.env.tmpPath)) fs.mkdirSync(this.env.tmpPath);
-        shell.openPath(this.env.tmpPath);
+        shell.openExternal(this.env.tmpPath, { activate: true, workingDirectory: this.env.tmpPath });
     }
 }
