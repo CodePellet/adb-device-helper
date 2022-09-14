@@ -38,15 +38,44 @@
                         aria-labelledby="settings-general-tab">
                         <div class="p-2 d-flex justify-content-start align-items-center">
                             <div class="form-check form-switch me-2">
-                                <input class="form-check-input" type="checkbox" id="saveTraceToFile" checked />
+                                <input title="Save Trace to File" placeholder="Save Trace to File"
+                                    class="form-check-input" type="checkbox" id="saveTraceToFile" checked />
                                 <label class="form-check-label" for="switchSaveTrace">Save trace</label>
                             </div>
-                            <button class="btn btn-primary" id="openTraceFolder">Open Trace Folder</button>
+                            <button class="btn btn-primary" id="openTraceFolder"
+                                onclick="window.shell.openTraceLocation();">Open Trace Folder</button>
                         </div>
+                        <table id="settings-table-profiles"
+                            class="mt-4 table table-sm table-striped table-dark table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Profiles</th>
+                                    <th>Messages</th>
+                                    <th>Tags</th>
+                                    <!-- <th>Macros</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Profiles added dynamically -->
+                            </tbody>
+                        </table>
                     </div>
                     <!-- Export/Import Tab Content -->
                     <div class="tab-pane" id="settings-exportImport" role="tabpanel"
-                        aria-labelledby="settings-export-import-tab">Export/Import Tab Content</div>
+                        aria-labelledby="settings-export-import-tab">
+                        <div class="d-flex flex-column gap-2 align-items-start">
+                            <span class="fs-6">Export Profiles</span>
+                            <span class="text-muted">Export all your profiles into a single dump file.</span>
+                            <button id="btn-settings-export-profiles" class="btn btn-primary" type="button">Export
+                                Profiles</button>
+                        </div>
+                        <div class="d-flex flex-column gap-2 align-items-start mt-3">
+                            <span class="fs-6">Import Profiles</span>
+                            <span class="text-muted">Import a Profile data dump</span>
+                            <button id="btn-settings-import-profiles" type="button" class="btn btn-secondary">Choose
+                                file</button>
+                        </div>
+                    </div>
                     <!-- About Tab Content -->
                     <div class="tab-pane" id="settings-about" role="tabpanel" aria-labelledby="settings-about-tab">
                         <div class="d-flex flex-column align-items-center justify-content-center">
@@ -71,7 +100,8 @@
                                 </svg>
                             </div>
                             <div class="container-fluid mt-2">
-                                by <a class="ms-1 text-reset" href="https://github.com/CodePellet">CodePellet</a>
+                                by <a class="ms-1 text-reset" href="#"
+                                    onclick="window.openWithNativeApp.openExternal('https://github.com/CodePellet')">CodePellet</a>
                             </div>
                             <div class="mt-2 fs-6">
                                 Version: <span class="app-version">YYYY.WW.d</span>

@@ -13,15 +13,14 @@ class ProfileController {
         this.saveChangesButton = document.getElementById("saveChanges");
         this.newListItemButton = document.getElementById("newListItem");
 
-        // this.fromIpcMain = this.fromIpcMain.bind(this);
-        // this.toIpcMain = this.toIpcMain.bind(this);
-        // this.profiles = this.profiles.bind(this);
+        window.profiler.settingsProfileUpdate((data) => {
+            this.tomlProfiles = window.profiler.getProfiles();
+            this.profiles.addProfilesToSelectMenu();
+        });
 
         this.tomlProfiles = window.profiler.getProfiles();
         this.profiles.addProfilesToSelectMenu();
         this.profiles.showTagsAndMessages("default");
-        // window.rogcat.profile.get(this.fromIpcMain().profiles.get);
-        // window.rogcat.profile.update(this.fromIpcMain().profiles.update);
 
         this.profileSelect.addEventListener("change", this.eventListeners.profileSelect.change);
         this.addProfileButton.addEventListener("click", this.eventListeners.addProfileButton.click);
@@ -118,8 +117,13 @@ class ProfileController {
 
         delete: (name) => {
             this.tomlProfiles = window.profiler.delete(name);
-            MacroController.macros().delete(name);
+            try {
+                MacroController.macros().delete(name);
+            } catch (error) {
+                console.error(error);
+            }
             this.profiles.addProfilesToSelectMenu();
+            this.profiles.showTagsAndMessages("default");
         },
 
         addProfilesToSelectMenu: () => {

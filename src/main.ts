@@ -82,7 +82,6 @@ const onDomReady = () => {
             log.info(message);
         })
         .on("data", adbDevices => {
-            console.log(adbDevices);
             prevError = { name: "", message: "", code: "" };
             mainWindow.webContents.send("adb:track-devices", adbDevices);
         })

@@ -22,7 +22,7 @@
         "@fortawesome/fontawesome-free": "^5.15.4",
         "@iarna/toml": "^2.2.5",
         "@popperjs/core": "^2.10.1",
-        "adbdevicetracker": "github:CodePellet/adbDeviceTracker",
+        "adbdevicetracker": "github:Codepellet/adbDeviceTracker",
         "bootstrap": "^5.1.0",
         "electron-db": "^0.15.7",
         "electron-log": "^4.4.1"

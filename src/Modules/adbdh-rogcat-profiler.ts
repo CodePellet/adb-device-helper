@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import toml, { JsonMap } from "@iarna/toml";
-import { ipcMain, IpcMainEvent } from "electron";
+import { ipcRenderer } from "electron";
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
@@ -37,6 +37,8 @@ export class RogcatProfiler {
         this.setup = this.setup.bind(this);
         this.getProfiles = this.getProfiles.bind(this);
         this.writeToFile = this.writeToFile.bind(this);
+        this.importProfiles = this.importProfiles.bind(this);
+        this.exportProfiles = this.exportProfiles.bind(this);
         this.create = this.create.bind(this);
         this.save = this.save.bind(this);
         this.delete = this.delete.bind(this);
@@ -79,6 +81,49 @@ export class RogcatProfiler {
         } catch (error) {
             return false;
         }
+    }
+
+    public async importProfiles(): Promise<any> {
+        const filePath = await ipcRenderer.invoke("showOpenDialogSync", { title: "Import Rogcat Profile", filters: [{ name: "TOML", extensions: ["toml"] }], properties: ["openFile"] })
+
+        if (!filePath) {
+            log.error("[RogcatProfiler]", "Error importing profiles", "Import file path not defined", filePath);
+            return { success: false, data: {} ?? undefined };
+        }
+
+        log.info("[RogcatProfiler]", "Importing profiles from", filePath);
+        const tomlProfileObj = this.tomlProfiles.profile;
+        const importedProfiles = toml.parse(fs.readFileSync(filePath.toString(), "utf-8"));
+
+        Object.entries(importedProfiles.profile).forEach(([key, value]): void => {
+
+            const existingTagArray: string[] = tomlProfileObj[key] ? [...tomlProfileObj[key].tag] : [];
+            const existingMessageArray: string[] = tomlProfileObj[key] ? [...tomlProfileObj[key].message] : [];
+
+            tomlProfileObj[key] = {
+                tag: Array.from(new Set([...value.tag, ...existingTagArray])),
+                message: Array.from(new Set([...value.message, ...existingMessageArray])),
+            }
+        });
+
+        this.tomlProfiles.profile = tomlProfileObj;
+        return {
+            success: this.writeToFile(this.tomlProfiles),
+            data: this.getProfiles()
+        };
+    }
+
+    public async exportProfiles(): Promise<boolean> {
+        const filePath = await ipcRenderer.invoke("showSaveDialogSync", { title: "Export Rogcat Profiles", filters: [{ name: "TOML", extensions: ["toml"] }], properties: ["showOverwriteConfirmation"] })
+
+        if (!filePath) {
+            log.error("[RogcatProfiler]", "Error exporting profiles", filePath);
+            return false
+        }
+
+        log.info("[RogcatProfiler]", "Exporting profiles to", filePath);
+        fs.writeFileSync(filePath, toml.stringify(this.getProfiles()));
+        return true;
     }
 
     public create(profile: RogcatProfile): any {

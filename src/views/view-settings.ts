@@ -27,5 +27,10 @@ export class SettingsView {
         this.settingsWindow.on("ready-to-show", () => {
             this.settingsWindow.show();
         });
+
+        this.settingsWindow.on("closed", () => {
+            parent.webContents.send("settings:update-profile-ui", {});
+        });
+
     }
 }
