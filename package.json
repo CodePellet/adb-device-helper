@@ -1,6 +1,6 @@
 {
     "name": "adb-device-helper",
-    "version": "2022.32.4",
+    "version": "2022.32.5",
     "description": "Helper for selected adb tasks",
     "main": "dist/main/main.js",
     "scripts": {
