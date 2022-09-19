@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/extensions
 import Toast from "../components/Toast/Toast.js";
 
 class SettingsController {
@@ -6,11 +7,15 @@ class SettingsController {
         this.exportBtn = document.getElementById("btn-settings-export-profiles");
         this.importBtn = document.getElementById("btn-settings-import-profiles");
         this.profileTable = document.getElementById("settings-table-profiles");
+        this.appVersionSpan = document.getElementById("settings-app-version");
+
 
         this.eventListeners = this.eventListeners.bind(this);
+        this.getAppVersion = this.getAppVersion.bind(this);
         this.getProfiles = this.getProfiles.bind(this);
 
-        window.electron.profiler.getProfiles(this.getProfiles);
+        this.getProfiles();
+        this.getAppVersion();
 
         this.exportBtn.addEventListener("click", this.eventListeners().buttons.exportProfile.click);
         this.importBtn.addEventListener("click", this.eventListeners().buttons.importProfile.click);
@@ -21,7 +26,7 @@ class SettingsController {
         return {
             buttons: {
                 importProfile: {
-                    click: async (event) => {
+                    click: async () => {
                         const { success, data } = await window.electron.profiler.importProfiles();
                         if (success) {
                             this.getProfiles(data)
@@ -30,7 +35,7 @@ class SettingsController {
                     }
                 },
                 exportProfile: {
-                    click: async (event) => {
+                    click: async () => {
                         const dialogReturnValue = await window.electron.profiler.exportProfiles();
 
                         if (dialogReturnValue)
@@ -41,7 +46,13 @@ class SettingsController {
         }
     }
 
-    getProfiles({ profile }) {
+    // eslint-disable-next-line class-methods-use-this
+    async getAppVersion() {
+        this.appVersionSpan.innerText = await window.electron.app.getVersion();
+    };
+
+    async getProfiles() {
+        const { profile } = await window.electron.profiler.getProfiles();
         const tbody = this.profileTable.querySelector("tbody");
         tbody.innerHTML = "";
         Object.keys(profile).forEach(p => {

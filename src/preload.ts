@@ -4,6 +4,9 @@ import { RogcatProfile, RogcatShellOptions } from "interfaces/common";
 
 
 contextBridge.exposeInMainWorld("electron", {
+  app: {
+    getVersion: () => ipcRenderer.invoke("app:getVersion")
+  },
   adb: {
     track: (callback: Function) =>
       ipcRenderer.on("adb:track-devices", (event, ...args) => callback(...args)),
@@ -24,14 +27,14 @@ contextBridge.exposeInMainWorld("electron", {
     setAndroidDevice: (serial: string, model: string) => ipcRenderer.invoke("shellController:setAndroidDevice", { serial, model })
   },
   macro: {
-    get: async (callback: Function) => callback(await ipcRenderer.invoke("macroController:getMacros")), // callback(macroController.getMacros()), // ipcRenderer.on("macros:get", (event, ...args) => callback(...args)),
-    save: async (macro: any, callback: Function) => callback(await ipcRenderer.invoke("macroController:save", macro)), // macroController.save(macro, callback),
-    delete: async (macro: any, callback: Function) => callback(await ipcRenderer.invoke("macroController:delete", macro)), //macroController.delete(macro, callback),
-    execute: async (command: any, callback: Function) => callback(await ipcRenderer.invoke("macroController:execute", command)), // macroController.execute(command, callback),
+    get: () => ipcRenderer.invoke("macroController:getMacros"),
+    save: (macro: any) => ipcRenderer.invoke("macroController:save", macro),
+    delete: (macro: any) => ipcRenderer.invoke("macroController:delete", macro),
+    execute: (command: any) => ipcRenderer.invoke("macroController:execute", command),
 
   },
   profiler: {
-    getProfiles: async (callback: Function) => callback(await ipcRenderer.invoke("profiler:getProfiles")),
+    getProfiles: () => ipcRenderer.invoke("profiler:getProfiles"),
     create: (profile: RogcatProfile) => ipcRenderer.invoke("profiler:create", profile),
     save: (profile: RogcatProfile) => ipcRenderer.invoke("profiler:save", profile),
     delete: (profileName: string) => ipcRenderer.invoke("profiler:delete", profileName),

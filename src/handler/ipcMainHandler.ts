@@ -1,5 +1,5 @@
 import { JsonMap } from "@iarna/toml/index";
-import { ipcMain } from "electron";
+import { app, ipcMain } from "electron";
 import { AndroidDevice } from "interfaces/common";
 import { RogcatProfiler } from "../Modules/adbdh-rogcat-profiler";
 import { MacroController } from "../Modules/controller/adbdh-macro-controller";
@@ -8,6 +8,9 @@ import { ShellController } from "../Modules/controller/adbdh-shell-controller";
 const shellController = ShellController.getInstance();
 const rogcatProfiler = RogcatProfiler.getInstance();
 const macroController = MacroController.getInstance();
+
+// APP HANDLER
+ipcMain.handle("app:getVersion", (event, args) => { return app.getVersion(); });
 
 // SHELL HANDLER
 ipcMain.handle("shellController:startServer", (event, args): void => { shellController.startServer(); });
@@ -41,7 +44,7 @@ ipcMain.handle("profiler:importProfiles", (event, args): Promise<{ success: bool
 
 // MACRO HANDLER
 
-ipcMain.handle("macroController:getMacros", (event, callback) => { return macroController.getMacros(); });
+ipcMain.handle("macroController:getMacros", (event, args) => { return macroController.getMacros(); });
 
 ipcMain.handle("macroController:save", (event, args) => { return macroController.save(args); });
 

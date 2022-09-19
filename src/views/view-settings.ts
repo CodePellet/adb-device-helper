@@ -20,6 +20,7 @@ export class SettingsView {
             autoHideMenuBar: true,
             modal: true,
             webPreferences: {
+                sandbox: true,
                 preload: path.join(__dirname, "..", "preload.js")
             }
         });

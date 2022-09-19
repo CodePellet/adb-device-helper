@@ -13,10 +13,9 @@ class ProfileController {
         this.saveChangesButton = document.getElementById("saveChanges");
         this.newListItemButton = document.getElementById("newListItem");
 
-        window.electron.profiler.settingsProfileUpdate(() =>
-            window.electron.profiler.getProfiles(this.fromIPCMain().getProfiles));
+        window.electron.profiler.settingsProfileUpdate(() => this.fromIPCMain().getProfiles());
 
-        window.electron.profiler.getProfiles(this.fromIPCMain().getProfiles);
+        this.fromIPCMain().getProfiles();
 
         this.eventListeners = this.eventListeners.bind(this);
         this.profiles = this.profiles.bind(this);
@@ -75,8 +74,8 @@ class ProfileController {
 
     fromIPCMain() {
         return {
-            getProfiles: (profiles) => {
-                this.tomlProfiles = profiles;
+            getProfiles: async () => {
+                this.tomlProfiles = await window.electron.profiler.getProfiles();
                 this.profiles().addProfilesToSelectMenu();
                 this.profiles().showTagsAndMessages("default");
             }
@@ -129,7 +128,7 @@ class ProfileController {
                 const { success, data } = await window.electron.profiler.delete(name);
 
                 if (!success) {
-                    window.electron.profiler.getProfiles(this.fromIPCMain().getProfiles);
+                    this.fromIPCMain().getProfiles();
                 }
 
                 MacroController.macros().delete(name);

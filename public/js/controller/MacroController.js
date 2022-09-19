@@ -15,7 +15,9 @@ class MacroController {
         this.toIpcMain = this.toIpcMain.bind(this);
         this.macros = this.macros.bind(this);
 
-        window.electron.macro.get(this.fromIpcMain().macros.get);
+        this.fromIpcMain().macros.get();
+
+        // window.electron.macro.get(this.fromIpcMain().macros.get);
 
         this.profileSelect.addEventListener("change", this.eventListeners().profileSelect.change);
 
@@ -53,8 +55,8 @@ class MacroController {
     fromIpcMain() {
         return {
             macros: {
-                get: (macros) => {
-                    this.macro = macros;
+                get: async () => {
+                    this.macro = await window.electron.macro.get();
                     this.macros().macroItems.show(this.profileSelect.value);
                 },
                 update: (macros) => {
@@ -69,21 +71,20 @@ class MacroController {
     toIpcMain() {
         return {
             macros: {
-                execute: (command) => {
+                execute: async (command) => {
                     const deviceId = this.adbDeviceSelect.value;
                     const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model");
-                    // window.shell.setAndroidDevice(deviceId, deviceModel);
                     window.electron.shell.setAndroidDevice(deviceId, deviceModel);
-                    window.electron.macro.execute(command, this.macros().showResults);
+                    const execResult = await window.electron.macro.execute(command);
+                    this.macros().showResults(execResult);
                 },
-                save: (macro = {}) => {
-                    window.electron.macro.save(macro, this.fromIpcMain().macros.update);
+                save: async (macro = {}) => {
+                    this.macro = await window.electron.macro.save(macro);
+                    Toast.showSaveToast();
                 },
-                delete: (macro) => {
-                    window.electron.macro.delete(macro, (macros) => {
-                        this.macro = macros;
-                        this.macros().macroItems.show("default");
-                    });
+                delete: async (macro) => {
+                    this.macro = await window.electron.macro.delete(macro);
+                    this.macros().macroItems.show("default");
                 },
             },
         };
@@ -94,7 +95,6 @@ class MacroController {
 
             saveChanges: () => {
                 const profileName = document.getElementById("profile-select").value;
-                // let comment = document.querySelector(".rogcat-profile-comment input[type=text]").value;
                 const comment = "";
                 const adbMacros = document.querySelectorAll(".adb-macro-list input[type=text]");
                 // const sshMacros = document.querySelectorAll(".ssh-macro-list input[type=text]");
@@ -112,7 +112,6 @@ class MacroController {
 
             delete: (name) => { this.toIpcMain().macros.delete(name); },
 
-            // showResults: ({ command, error, stdout, stderr }) => {
             showResults: ({ command, error, stdout, stderr }) => {
                 const elementId = Math.floor(Math.random() * 100000);
                 const tabPaneResults = document.getElementById("tabPaneResults");
