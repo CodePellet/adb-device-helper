@@ -41,4 +41,10 @@ ipcMain.handle("profiler:importProfiles", (event, args): Promise<{ success: bool
 
 // MACRO HANDLER
 
-ipcMain.handle("macroController:getMacros", (event, callback) => { return macroController.getMacros(); })
+ipcMain.handle("macroController:getMacros", (event, callback) => { return macroController.getMacros(); });
+
+ipcMain.handle("macroController:save", (event, args) => { return macroController.save(args); });
+
+ipcMain.handle("macroController:delete", (event, args) => { return macroController.delete(args); });
+
+ipcMain.handle("macroController:execute", (event, args) => { return macroController.execute(args); });

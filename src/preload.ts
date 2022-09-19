@@ -25,10 +25,9 @@ contextBridge.exposeInMainWorld("electron", {
   },
   macro: {
     get: async (callback: Function) => callback(await ipcRenderer.invoke("macroController:getMacros")), // callback(macroController.getMacros()), // ipcRenderer.on("macros:get", (event, ...args) => callback(...args)),
-    update: (callback: Function) => ipcRenderer.invoke("macroController:update", callback), // macroController.update(callback), // ipcRenderer.on("macros:update", (event, ...args) => callback(...args)),
-    execute: (command: any, callback: any) => ipcRenderer.invoke("macroController:execute", { command, callback }), // macroController.execute(command, callback),
-    save: (macro: any, callback: any) => ipcRenderer.invoke("macroController:save", { macro, callback }), // macroController.save(macro, callback),
-    delete: (macro: any, callback: any) => ipcRenderer.invoke("macroController:delete", { macro, callback }) //macroController.delete(macro, callback),
+    save: async (macro: any, callback: Function) => callback(await ipcRenderer.invoke("macroController:save", macro)), // macroController.save(macro, callback),
+    delete: async (macro: any, callback: Function) => callback(await ipcRenderer.invoke("macroController:delete", macro)), //macroController.delete(macro, callback),
+    execute: async (command: any, callback: Function) => callback(await ipcRenderer.invoke("macroController:execute", command)), // macroController.execute(command, callback),
 
   },
   profiler: {
