@@ -44,8 +44,6 @@ class Toast {
                             </div>
                             <div class="toast-body">Profiles exported successfully!</div>
                         </div>`,
-
-
         }
     }
 
@@ -55,7 +53,7 @@ class Toast {
             "beforeend",
             this.ToastTemplates().clipToast(randomToastId)
         );
-        this._showToast(`clipToast_${randomToastId}`);
+        this.showToast(`clipToast_${randomToastId}`);
     }
 
     showSaveToast() {
@@ -64,7 +62,7 @@ class Toast {
                 "beforeend",
                 this.ToastTemplates().saveToast()
             );
-        this._showToast(`saveToast`);
+        this.showToast(`saveToast`);
     }
 
     showImportToast() {
@@ -73,7 +71,7 @@ class Toast {
                 "beforeend",
                 this.ToastTemplates().importToast()
             );
-        this._showToast(`importToast`);
+        this.showToast(`importToast`);
     }
 
     showExportToast() {
@@ -82,19 +80,22 @@ class Toast {
                 "beforeend",
                 this.ToastTemplates().exportToast()
             );
-        this._showToast(`exportToast`);
+        this.showToast(`exportToast`);
     }
 
-    _disposeToast(toastEl) {
+    // eslint-disable-next-line class-methods-use-this
+    disposeToast(toastEl) {
         toastEl.addEventListener("hidden.bs.toast", () => {
             toastEl.remove();
         })
     }
-    _showToast(toastElId) {
+
+    showToast(toastElId) {
         const toastEl = document.getElementById(toastElId);
+        // eslint-disable-next-line no-undef
         const bsToast = new bootstrap.Toast(toastEl);
         bsToast.show();
-        this._disposeToast(toastEl);
+        this.disposeToast(toastEl);
     }
 }
 
