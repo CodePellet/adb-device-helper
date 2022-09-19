@@ -31,7 +31,7 @@ class Toast {
                             <div class="toast-header">
                                 <div class="rounded p-2 me-2 bg-success" alt="..."></div>
                                 <strong class="me-auto">Success</strong>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                             <div class="toast-body">Profiles imported successfully!</div>
                         </div>`,
@@ -40,7 +40,7 @@ class Toast {
                             <div class="toast-header">
                                 <div class="rounded p-2 me-2 bg-success" alt="..."></div>
                                 <strong class="me-auto">Success</strong>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                             <div class="toast-body">Profiles exported successfully!</div>
                         </div>`,
