@@ -112,7 +112,8 @@ class MacroController {
 
             delete: (name) => { this.toIpcMain().macros.delete(name); },
 
-            showResults: (command, error, stdout, stderr) => {
+            // showResults: ({ command, error, stdout, stderr }) => {
+            showResults: ({ command, error, stdout, stderr }) => {
                 const elementId = Math.floor(Math.random() * 100000);
                 const tabPaneResults = document.getElementById("tabPaneResults");
                 const deviceId = this.adbDeviceSelect.value;
@@ -126,7 +127,7 @@ class MacroController {
 
                 tabPaneResults.insertAdjacentHTML(
                     "beforeend",
-                    `<div id="commandResultContainer_${elementId}" class="form-floating mb-2 d-flex align-items-center justify-content-center">
+                    `<div id="commandResultContainer_${elementId}" class="form-floating mb-2 d-flex align-items-center justify-content-center text-break">
                         <div id="textarea_${elementId}" class="form-control ${commandResultBG}" style="user-select: text; height: fit-content; --bg">${commandResult.replaceAll("\n", "<br/>")}</div>
                         <label for="testarea_${elementId}" ><strong>Command:</strong> ${command} - <strong>Device:</strong> ${deviceId} <strong>Model:</strong> ${deviceModel}</label>
                         <div class="position-absolute end-0 top-0 d-flex p-2">
