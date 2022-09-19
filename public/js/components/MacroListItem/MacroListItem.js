@@ -16,7 +16,7 @@ export default class MacroListItem {
             "beforeend",
             `<li class="list-group-item">
                 <div class="input-group w-100">
-                    <input type="text" class="form-control" value="${filterValue}"/>
+                    <input type="text" class="form-control" value="${filterValue.replace(/"/g, '&quot;')}"/>
                     <!--<button class="btn btn-outline-secondary bg-dark text-light" type="button">
                                 <i class="fas fa-pen fa-fw"></i>
                             </button>-->
