@@ -50,20 +50,6 @@
                             <button class="btn btn-primary" id="openTraceFolder"
                                 onclick="window.electron.shell.openTraceLocation();">Open Trace Folder</button>
                         </div>
-                        <table id="settings-table-profiles"
-                            class="mt-4 table table-sm table-striped table-dark table-borderless">
-                            <thead>
-                                <tr>
-                                    <th>Profiles</th>
-                                    <th>Messages</th>
-                                    <th>Tags</th>
-                                    <!-- <th>Macros</th> -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Profiles added dynamically -->
-                            </tbody>
-                        </table>
                     </div>
                     <!-- Export/Import Tab Content -->
                     <div class="tab-pane" id="settings-exportImport" role="tabpanel"
@@ -80,6 +66,20 @@
                             <button id="btn-settings-import-profiles" type="button" class="btn btn-secondary">Choose
                                 file</button>
                         </div>
+                        <table id="settings-table-profiles"
+                            class="mt-4 table table-sm table-striped table-dark table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Profiles</th>
+                                    <th>Messages</th>
+                                    <th>Tags</th>
+                                    <!-- <th>Macros</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Profiles added dynamically -->
+                            </tbody>
+                        </table>
                     </div>
                     <!-- About Tab Content -->
                     <div class="tab-pane" id="settings-about" role="tabpanel" aria-labelledby="settings-about-tab">
