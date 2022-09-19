@@ -15,7 +15,7 @@ class MacroController {
         this.toIpcMain = this.toIpcMain.bind(this);
         this.macros = this.macros.bind(this);
 
-        window.macros.get(this.fromIpcMain().macros.get);
+        window.electron.macro.get(this.fromIpcMain().macros.get);
 
         this.profileSelect.addEventListener("change", this.eventListeners().profileSelect.change);
 
@@ -72,14 +72,15 @@ class MacroController {
                 execute: (command) => {
                     const deviceId = this.adbDeviceSelect.value;
                     const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model");
-                    window.shell.setAndroidDevice(deviceId, deviceModel);
-                    window.macros.execute(command, this.macros().showResults);
+                    // window.shell.setAndroidDevice(deviceId, deviceModel);
+                    window.electron.shell.setAndroidDevice(deviceId, deviceModel);
+                    window.electron.macro.execute(command, this.macros().showResults);
                 },
                 save: (macro = {}) => {
-                    window.macros.save(macro, this.fromIpcMain().macros.update);
+                    window.electron.macro.save(macro, this.fromIpcMain().macros.update);
                 },
                 delete: (macro) => {
-                    window.macros.delete(macro, (macros) => {
+                    window.electron.macro.delete(macro, (macros) => {
                         this.macro = macros;
                         this.macros().macroItems.show("default");
                     });

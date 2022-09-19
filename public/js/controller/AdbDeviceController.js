@@ -15,7 +15,7 @@ class AdbDeviceController {
         this.devices = this.devices.bind(this);
         this.setProfileControllerInstance = this.setProfileControllerInstance.bind(this);
 
-        window.adb.track(this.fromIPCMain().devices.track);
+        window.electron.adb.track(this.fromIPCMain().devices.track);
 
         this.adbDeviceSelect.addEventListener("change", this.eventListeners().adbDeviceSelect.change);
 
@@ -118,38 +118,43 @@ class AdbDeviceController {
                 setDeviceInfo: () => {
                     const deviceId = this.adbDeviceSelect.value;
                     const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model")
-                    window.shell.setAndroidDevice(deviceId, deviceModel);
+                    // window.shell.setAndroidDevice(deviceId, deviceModel);
+                    window.electron.shell.setAndroidDevice(deviceId, deviceModel);
                 },
             },
             server: {
                 start: () => {
                     this.startAdbServer.querySelector('span.spinner-border').classList.remove("visually-hidden");
                     this.startAdbServer.querySelector('.fa-play').classList.add("visually-hidden");
-                    window.adb.server.start();
+                    window.electron.adb.server.start();
                 },
                 stop: () => {
-                    window.adb.server.stop();
+                    window.electron.adb.server.stop();
                     this.adbDeviceCountBadge.classList.add("visually-hidden");
                 },
             },
             shell: {
                 local: () => {
                     this.toIPCMain().devices.setDeviceInfo();
-                    window.shell.openLocalShell();
+                    // window.shell.openLocalShell();
+                    window.electron.shell.openLocalShell();
                 },
                 remote: () => {
                     this.toIPCMain().devices.setDeviceInfo();
-                    window.shell.openDeviceShell();
+                    // window.shell.openDeviceShell();
+                    window.electron.shell.openDeviceShell();
                 },
                 rogcat: (profile, saveToFile) => {
                     this.toIPCMain().devices.setDeviceInfo();
                     const options = { activeProfile: profile, saveTraceToFile: saveToFile };
-                    window.shell.openRogcatShell(options);
+                    // window.shell.openRogcatShell(options);
+                    window.electron.shell.openRogcatShell(options);
                 },
             },
             trace: {
                 openTraceDirectory: () => {
-                    window.shell.openTraceLocation();
+                    // window.shell.openTraceLocation();
+                    window.electron.shell.openTraceLocation();
                 },
             },
         };

@@ -1,26 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import toml, { JsonMap } from "@iarna/toml";
-import { ipcRenderer } from "electron";
+import { dialog } from "electron";
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
 
-
-interface RogcatProfile {
-    name: string;
-    data: {
-        comment?: string;
-        extends?: string[];
-        highlight?: string[];
-        message?: string[];
-        message_ignore_case?: string[];
-        regex?: string[];
-        tag?: string[];
-        tag_ignore_case?: string[];
-    };
-
-}
-
+import { RogcatProfile } from "interfaces/common";
 export class RogcatProfiler {
 
     private static _instance: RogcatProfiler;
@@ -69,7 +54,7 @@ export class RogcatProfiler {
         }
     }
 
-    public getProfiles(): any {
+    public getProfiles(): JsonMap {
         this.tomlProfiles = toml.parse(fs.readFileSync(this.rogcatProfileFile, "utf-8"));
         return this.tomlProfiles;
     }
@@ -83,17 +68,17 @@ export class RogcatProfiler {
         }
     }
 
-    public async importProfiles(): Promise<any> {
-        const filePath = await ipcRenderer.invoke("showOpenDialogSync", { title: "Import Rogcat Profile", filters: [{ name: "TOML", extensions: ["toml"] }], properties: ["openFile"] })
+    public async importProfiles(): Promise<{ success: boolean, data: JsonMap }> {
+        const dialogResult = await dialog.showOpenDialog({ title: "Import Rogcat Profile", filters: [{ name: "TOML", extensions: ["toml"] }], properties: ["openFile", "openFile"] });
 
-        if (!filePath) {
-            log.error("[RogcatProfiler]", "Error importing profiles", "Import file path not defined", filePath);
+        if (dialogResult.canceled || !dialogResult.filePaths) {
+            log.error("[RogcatProfiler]", "Error importing profiles", "Import file path not defined", dialogResult.filePaths[0]);
             return { success: false, data: {} ?? undefined };
         }
 
-        log.info("[RogcatProfiler]", "Importing profiles from", filePath);
+        log.info("[RogcatProfiler]", "Importing profiles from", dialogResult.filePaths[0]);
         const tomlProfileObj = this.tomlProfiles.profile;
-        const importedProfiles = toml.parse(fs.readFileSync(filePath.toString(), "utf-8"));
+        const importedProfiles = toml.parse(fs.readFileSync(dialogResult.filePaths[0].toString(), "utf-8"));
 
         Object.entries(importedProfiles.profile).forEach(([key, value]): void => {
 
@@ -114,26 +99,26 @@ export class RogcatProfiler {
     }
 
     public async exportProfiles(): Promise<boolean> {
-        const filePath = await ipcRenderer.invoke("showSaveDialogSync", { title: "Export Rogcat Profiles", filters: [{ name: "TOML", extensions: ["toml"] }], properties: ["showOverwriteConfirmation"] })
+        const dialogResult = await dialog.showSaveDialog({ title: "Export Rogcat Profiles", filters: [{ name: "TOML", extensions: ["toml"] }], properties: ["showOverwriteConfirmation"] })
 
-        if (!filePath) {
-            log.error("[RogcatProfiler]", "Error exporting profiles", filePath);
+        if (!dialogResult.filePath) {
+            log.error("[RogcatProfiler]", "Error exporting profiles", dialogResult.filePath);
             return false
         }
 
-        log.info("[RogcatProfiler]", "Exporting profiles to", filePath);
-        fs.writeFileSync(filePath, toml.stringify(this.getProfiles()));
+        log.info("[RogcatProfiler]", "Exporting profiles to", dialogResult.filePath);
+        fs.writeFileSync(dialogResult.filePath, toml.stringify(this.getProfiles()));
         return true;
     }
 
-    public create(profile: RogcatProfile): any {
+    public create(profile: RogcatProfile): JsonMap {
         this.tomlProfiles.profile = { ...this.tomlProfiles.profile, [profile.name]: { ...profile.data } };
         this.writeToFile(this.tomlProfiles);
         return this.getProfiles();
     }
 
-    public save(profile: RogcatProfile): { success: boolean, data: Object } {
-        const rogcatProfiles = this.getProfiles();
+    public save(profile: RogcatProfile): { success: boolean, data: JsonMap } {
+        const rogcatProfiles: any = this.getProfiles();
         rogcatProfiles.profile[profile.name].comment = profile.data.comment;
         rogcatProfiles.profile[profile.name].tag = profile.data.tag;
         rogcatProfiles.profile[profile.name].message = profile.data.message;
@@ -143,7 +128,7 @@ export class RogcatProfiler {
 
     public delete(profileName: string): any {
         delete this.tomlProfiles.profile[profileName];
-        this.writeToFile(this.tomlProfiles);
-        return this.getProfiles();
+        const writeSuccess = this.writeToFile(this.tomlProfiles);
+        return { success: writeSuccess, data: this.getProfiles() };
     }
 }

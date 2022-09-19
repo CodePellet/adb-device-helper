@@ -10,8 +10,7 @@ class SettingsController {
         this.eventListeners = this.eventListeners.bind(this);
         this.getProfiles = this.getProfiles.bind(this);
 
-        this.rogcatProfiles = window.profiler.getProfiles();
-        this.getProfiles(this.rogcatProfiles);
+        window.electron.profiler.getProfiles(this.getProfiles);
 
         this.exportBtn.addEventListener("click", this.eventListeners().buttons.exportProfile.click);
         this.importBtn.addEventListener("click", this.eventListeners().buttons.importProfile.click);
@@ -23,7 +22,7 @@ class SettingsController {
             buttons: {
                 importProfile: {
                     click: async (event) => {
-                        const { success, data } = await window.profiler.importProfiles();
+                        const { success, data } = await window.electron.profiler.importProfiles();
                         if (success) {
                             this.getProfiles(data)
                             Toast.showImportToast();
@@ -31,8 +30,11 @@ class SettingsController {
                     }
                 },
                 exportProfile: {
-                    click: (event) => {
-                        window.profiler.exportProfiles();
+                    click: async (event) => {
+                        const dialogReturnValue = await window.electron.profiler.exportProfiles();
+
+                        if (dialogReturnValue)
+                            Toast.showExportToast();
                     }
                 }
             }

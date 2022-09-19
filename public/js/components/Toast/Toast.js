@@ -6,40 +6,45 @@ class Toast {
         this.ToastTemplates = this.ToastTemplates.bind(this);
     }
 
+    // eslint-disable-next-line class-methods-use-this
     ToastTemplates() {
         return {
-            clipToast: (randomId) => {
-                return `<div id="clipToast_${randomId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            clipToast: (randomId) => `<div id="clipToast_${randomId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="toast-header">
                                 <div class="rounded p-2 me-2 bg-success" alt="..."></div>
                                 <strong class="me-auto">Success</strong>
                                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                             <div class="toast-body">Copied to clipboard!</div>
-                        </div>`;
-            },
+                        </div>`,
 
-            saveToast: () => {
-                return `<div id="saveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            saveToast: () => `<div id="saveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="toast-header">
                                 <div class="rounded p-2 me-2 bg-success" alt="..."></div>
                                 <strong class="me-auto">Success</strong>
                                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                             <div class="toast-body">Saved!</div>
-                        </div>`;
-            },
+                        </div>`,
 
-            importToast: () => {
-                return `<div id="importToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            importToast: () => `<div id="importToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="toast-header">
                                 <div class="rounded p-2 me-2 bg-success" alt="..."></div>
                                 <strong class="me-auto">Success</strong>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                             <div class="toast-body">Profiles imported successfully!</div>
-                        </div>`;
-            },
+                        </div>`,
+
+            exportToast: () => `<div id="exportToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="toast-header">
+                                <div class="rounded p-2 me-2 bg-success" alt="..."></div>
+                                <strong class="me-auto">Success</strong>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">Profiles exported successfully!</div>
+                        </div>`,
+
 
         }
     }
@@ -69,6 +74,15 @@ class Toast {
                 this.ToastTemplates().importToast()
             );
         this._showToast(`importToast`);
+    }
+
+    showExportToast() {
+        if (document.getElementById("exportToast") == null)
+            this.toastContainer.insertAdjacentHTML(
+                "beforeend",
+                this.ToastTemplates().exportToast()
+            );
+        this._showToast(`exportToast`);
     }
 
     _disposeToast(toastEl) {

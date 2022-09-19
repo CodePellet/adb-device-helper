@@ -2,18 +2,19 @@ import * as childProcess from "child_process";
 import { shell } from "electron";
 import * as log from "electron-log";
 import * as fs from "fs";
+import { AndroidDevice, RogcatShellOptions } from "interfaces/common";
 import * as path from "path";
 import { EnvController } from "./adbdh-env-controller";
 
-interface AndroidDevice {
-    serial: string;
-    model: string;
-}
+// interface AndroidDevice {
+//     serial: string;
+//     model: string;
+// }
 
-interface RogcatShellOptions {
-    activeProfile: string;
-    saveTraceToFile: boolean;
-}
+// interface RogcatShellOptions {
+//     activeProfile: string;
+//     saveTraceToFile: boolean;
+// }
 
 export class ShellController {
 
