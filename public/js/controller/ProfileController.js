@@ -129,7 +129,6 @@ class ProfileController {
                 const { success, data } = await window.electron.profiler.delete(name);
 
                 if (!success) {
-                    console.error("Error delete profile", name);
                     window.electron.profiler.getProfiles(this.fromIPCMain().getProfiles);
                 }
 
