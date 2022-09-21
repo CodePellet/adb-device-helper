@@ -1,6 +1,6 @@
 {
     "name": "adb-device-helper",
-    "version": "2022.38.1",
+    "version": "2022.38.2",
     "description": "Helper for selected adb tasks",
     "main": "dist/main/main.js",
     "scripts": {
@@ -25,7 +25,8 @@
         "adbdevicetracker": "github:Codepellet/adbDeviceTracker",
         "bootstrap": "^5.1.0",
         "electron-db": "^0.15.7",
-        "electron-log": "^4.4.1"
+        "electron-log": "^4.4.1",
+        "find-process": "^1.4.7"
     },
     "devDependencies": {
         "@types/node": "^18.6.2",
