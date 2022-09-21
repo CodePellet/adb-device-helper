@@ -43,6 +43,24 @@ const mainMenuTemplate: MenuItemConstructorOptions[] = [
         ]
     },
     {
+        role: "viewMenu",
+        submenu: [
+            {
+                role: "zoomIn",
+            },
+            {
+                role: "zoomOut",
+            },
+            {
+                type: "separator"
+            },
+            {
+                role: "resetZoom",
+                label: "Reset Zoom"
+            }
+        ]
+    },
+    {
         role: "help",
         submenu: [
             {
