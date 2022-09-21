@@ -93,13 +93,11 @@ const createWindow = () => {
     mainWindow.webContents.on("dom-ready", onDomReady);
 }
 
-let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
 const onDomReady = () => {
+    let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
     if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
 
-    tracker.start();
-
-    tracker
+    tracker.start()
         .on("info", message => {
             log.info(message);
         })
