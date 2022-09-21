@@ -97,7 +97,9 @@ const onDomReady = () => {
     let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
     if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
 
-    tracker.start()
+    tracker.start();
+
+    tracker
         .on("info", message => {
             log.info(message);
         })
