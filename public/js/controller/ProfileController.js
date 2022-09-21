@@ -13,6 +13,10 @@ class ProfileController {
         this.saveChangesButton = document.getElementById("saveChanges");
         this.newListItemButton = document.getElementById("newListItem");
 
+        // BADGES
+        this.tabPaneTagBadge = document.getElementById("tabPaneTagBadge");
+        this.tabPaneMessageBadge = document.getElementById("tabPaneMessageBadge");
+
         window.electron.profiler.settingsProfileUpdate(() => this.fromIPCMain().getProfiles());
 
         this.fromIPCMain().getProfiles();
@@ -120,6 +124,7 @@ class ProfileController {
                     Toast.showSaveToast();
                     this.tomlProfiles = saveResult.data;
                 }
+                this.profiles().showTagsAndMessages(profileName);
             },
 
             get: () => this.tomlProfiles,
@@ -157,6 +162,10 @@ class ProfileController {
 
                 tag.forEach((t) => ListFilterItem.appendListItem(".tag-list", t));
                 message.forEach((m) => ListFilterItem.appendListItem(".message-list", m));
+
+                // Show number of items in badge counter
+                this.tabPaneTagBadge.innerHTML = tag.length;
+                this.tabPaneMessageBadge.innerHTML = message.length;
             },
         };
     }

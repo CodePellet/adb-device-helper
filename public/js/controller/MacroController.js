@@ -11,6 +11,10 @@ class MacroController {
         this.newMacroItemButton = document.getElementById("newMacroItem");
         this.tabPaneResults = document.querySelector("[data-bs-target='#tabPaneResults']");
 
+        // BADGES
+        this.tabPaneResultBadge = document.getElementById("tabPaneResultsBadge");
+        this.tabPaneAdbBadge = document.getElementById("tabPaneAdbBadge");
+
         this.fromIpcMain = this.fromIpcMain.bind(this);
         this.toIpcMain = this.toIpcMain.bind(this);
         this.macros = this.macros.bind(this);
@@ -39,7 +43,12 @@ class MacroController {
             },
             tabs: {
                 resultsTab: {
-                    shown: () => { this.newMacroItemButton.disabled = true },
+                    shown: () => {
+                        this.newMacroItemButton.disabled = true;
+                        setTimeout(() => {
+                            this.tabPaneResultBadge.classList.add("visually-hidden")
+                        }, 2000);
+                    },
                     hidden: () => { this.newMacroItemButton.disabled = false }
                 }
             },
@@ -144,6 +153,8 @@ class MacroController {
                 document.getElementById(`button_trash_${elementId}`).addEventListener("click", () => {
                     document.getElementById(`commandResultContainer_${elementId}`).remove();
                 });
+                this.tabPaneResultBadge.classList.remove("visually-hidden");
+                Toast.showExecuteMacroToast(error);
             },
 
             macroItems: {
@@ -157,6 +168,7 @@ class MacroController {
                     macroObj?.adb.forEach((t) => {
                         MacroListItem.append(".adb-macro-list", t, this.macros().execute, MacroListItem.delete);
                     });
+                    this.tabPaneAdbBadge.innerHTML = macroObj?.adb.length;
                     // ssh.forEach((m) => MacroListItem.append(".ssh-macro-list", m));
                 },
             },

@@ -128,11 +128,14 @@
                       <a class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneTags"
                         aria-current="true" href="#">
                         Tags
+                        <span id="tabPaneTagBadge" class="badge bg-secondary">0</span>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneMessages"
-                        href="#">Messages</a>
+                        href="#">Messages
+                        <span id="tabPaneMessageBadge" class="badge bg-secondary">0</span>
+                      </a>
                     </li>
                   </ul>
                   <div class="d-flex align-items-center position-absolute top-50 bottom-50 end-0 me-3 btn-group">
@@ -169,14 +172,16 @@
                       <button class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabPaneAdb"
                         aria-current="true">
                         ADB
+                        <span id="tabPaneAdbBadge" class="badge bg-secondary">0</span>
                       </button>
                     </li>
                     <li class="nav-item" hidden>
                       <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabPaneSsh">SSH</button>
                     </li>
                     <li class="nav-item">
-                      <button class="nav-link text-dark" data-bs-toggle="tab"
-                        data-bs-target="#tabPaneResults">Results</button>
+                      <button class="nav-link text-dark position-relative" data-bs-toggle="tab"
+                        data-bs-target="#tabPaneResults">Results <span id="tabPaneResultsBadge"
+                          class="badge bg-danger visually-hidden">New</span></button>
                     </li>
                   </ul>
                   <div class="d-flex align-items-center position-absolute top-50 bottom-50 end-0 me-3 btn-group">
