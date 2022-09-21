@@ -44,6 +44,15 @@ class Toast {
                             </div>
                             <div class="toast-body">Profiles exported successfully!</div>
                         </div>`,
+            executeMacroToast: (error) => `<div id="executeMacroToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="toast-header">
+                                <div class="rounded p-2 me-2 ${error ? "bg-danger" : "bg-success"}" alt="..."></div>
+                                <strong class="me-auto">${error ? "Error" : "Success"}</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">Macro executed ${error ? "with errors" : "successfully"}!</div>
+                        </div>`,
+
         }
     }
 
@@ -81,6 +90,15 @@ class Toast {
                 this.ToastTemplates().exportToast()
             );
         this.showToast(`exportToast`);
+    }
+
+    showExecuteMacroToast(error) {
+        if (document.getElementById("executeMacroToast") == null)
+            this.toastContainer.insertAdjacentHTML(
+                "beforeend",
+                this.ToastTemplates().executeMacroToast(error)
+            );
+        this.showToast(`executeMacroToast`);
     }
 
     // eslint-disable-next-line class-methods-use-this
