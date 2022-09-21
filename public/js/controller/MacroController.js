@@ -90,6 +90,7 @@ class MacroController {
                 save: async (macro = {}) => {
                     this.macro = await window.electron.macro.save(macro);
                     Toast.showSaveToast();
+                    this.macros().macroItems.show(macro.name);
                 },
                 delete: async (macro) => {
                     this.macro = await window.electron.macro.delete(macro);
