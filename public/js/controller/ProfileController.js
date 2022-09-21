@@ -1,6 +1,7 @@
 /* eslint-disable import/extensions */
 import ListFilterItem from "../components/ListFilterItem/ListFilterItem.js";
 import Toast from "../components/Toast/Toast.js";
+import MacroController from "./MacroController.js";
 
 class ProfileController {
     constructor() {
@@ -12,12 +13,16 @@ class ProfileController {
         this.saveChangesButton = document.getElementById("saveChanges");
         this.newListItemButton = document.getElementById("newListItem");
 
-        this.fromIpcMain = this.fromIpcMain.bind(this);
-        this.toIpcMain = this.toIpcMain.bind(this);
-        this.profiles = this.profiles.bind(this);
+        // BADGES
+        this.tabPaneTagBadge = document.getElementById("tabPaneTagBadge");
+        this.tabPaneMessageBadge = document.getElementById("tabPaneMessageBadge");
 
-        window.rogcat.profile.get(this.fromIpcMain().profiles.get);
-        window.rogcat.profile.update(this.fromIpcMain().profiles.update);
+        window.electron.profiler.settingsProfileUpdate(() => this.fromIPCMain().getProfiles());
+
+        this.fromIPCMain().getProfiles();
+
+        this.eventListeners = this.eventListeners.bind(this);
+        this.profiles = this.profiles.bind(this);
 
         this.profileSelect.addEventListener("change", this.eventListeners().profileSelect.change);
         this.addProfileButton.addEventListener("click", this.eventListeners().addProfileButton.click);
@@ -33,7 +38,7 @@ class ProfileController {
                 change: (e) => {
                     const { value } = e.target;
                     this.removeProfileButton.disabled = value === "default";
-                    this.profiles().filterItems.show(value);
+                    this.profiles().showTagsAndMessages(value);
                 },
             },
             addProfileButton: {
@@ -71,37 +76,14 @@ class ProfileController {
         };
     }
 
-    fromIpcMain() {
+    fromIPCMain() {
         return {
-            profiles: {
-                get: (tomlProfiles) => {
-                    this.tomlProfiles = tomlProfiles;
-                    this.profiles().show();
-                    this.profiles().filterItems.show(this.profileSelect.value);
-                },
-                update: (tomlProfiles) => {
-                    this.tomlProfiles = tomlProfiles;
-                    Toast.showSaveToast();
-                },
-            },
-        };
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    toIpcMain() {
-        return {
-            profile: {
-                create: (profile = {}) => {
-                    window.rogcat.profile.create(profile);
-                },
-                saveChanges: (profile = {}) => {
-                    window.rogcat.profile.saveChanges(profile);
-                },
-                delete: (profile) => {
-                    window.rogcat.profile.delete(profile);
-                },
-            },
-        };
+            getProfiles: async () => {
+                this.tomlProfiles = await window.electron.profiler.getProfiles();
+                this.profiles().addProfilesToSelectMenu();
+                this.profiles().showTagsAndMessages("default");
+            }
+        }
     }
 
     profiles() {
@@ -110,36 +92,57 @@ class ProfileController {
                 group.insertAdjacentHTML("beforeend", `<option value="${name}">${name}</option>`);
             },
 
-            create: (name, comment = "", tag = [], message = []) => {
-                this.toIpcMain().profile.create({
-                    [name]: {
+            create: async (name, comment = "", tag = [], message = []) => {
+                this.tomlProfiles = await window.electron.profiler.create({
+                    name,
+                    data: {
                         comment,
                         tag,
                         message,
                     },
                 });
+                this.profiles().addProfilesToSelectMenu();
             },
 
-            saveChanges: () => {
+            saveChanges: async () => {
                 const profileName = document.getElementById("profile-select").value;
                 // let comment = document.querySelector(".rogcat-profile-comment input[type=text]").value;
                 const comment = "";
                 const tags = document.querySelectorAll(".tag-list input[type=text]");
                 const messages = document.querySelectorAll(".message-list input[type=text]");
 
-                this.toIpcMain().profile.saveChanges({
+                const saveResult = await window.electron.profiler.save({
                     name: profileName,
-                    comment,
-                    tag: Array.from(tags, (tag) => tag.value).filter((t) => t !== ""),
-                    message: Array.from(messages, (message) => message.value).filter((m) => m !== ""),
+                    data: {
+                        comment,
+                        tag: Array.from(tags, (tag) => tag.value).filter((t) => t !== ""),
+                        message: Array.from(messages, (message) => message.value).filter((m) => m !== ""),
+                    }
                 });
+
+                if (saveResult.success === true) {
+                    Toast.showSaveToast();
+                    this.tomlProfiles = saveResult.data;
+                }
+                this.profiles().showTagsAndMessages(profileName);
             },
 
-            delete: (name) => {
-                this.toIpcMain().profile.delete(name);
+            get: () => this.tomlProfiles,
+
+            delete: async (name) => {
+                const { success, data } = await window.electron.profiler.delete(name);
+
+                if (!success) {
+                    this.fromIPCMain().getProfiles();
+                }
+
+                MacroController.macros().delete(name);
+                this.tomlProfiles = data;
+                this.profiles().addProfilesToSelectMenu();
+                this.profiles().showTagsAndMessages("default");
             },
 
-            show: () => {
+            addProfilesToSelectMenu: () => {
                 const { profile } = this.tomlProfiles;
                 this.defaultProfileGroup.innerHTML = "";
                 this.customProfileGroup.innerHTML = "";
@@ -150,20 +153,23 @@ class ProfileController {
                 });
             },
 
-            filterItems: {
-                show: (profile) => {
-                    this.activeProfile = profile;
-                    const { tag, message } = this.tomlProfiles.profile[profile];
+            showTagsAndMessages: (profile) => {
+                this.activeProfile = profile;
+                const { tag, message } = this.tomlProfiles.profile[profile];
 
-                    ListFilterItem.clear(".tag-list");
-                    ListFilterItem.clear(".message-list");
+                ListFilterItem.clear(".tag-list");
+                ListFilterItem.clear(".message-list");
 
-                    tag.forEach((t) => ListFilterItem.appendListItem(".tag-list", t));
-                    message.forEach((m) => ListFilterItem.appendListItem(".message-list", m));
-                },
+                tag.forEach((t) => ListFilterItem.appendListItem(".tag-list", t));
+                message.forEach((m) => ListFilterItem.appendListItem(".message-list", m));
+
+                // Show number of items in badge counter
+                this.tabPaneTagBadge.innerHTML = tag.length;
+                this.tabPaneMessageBadge.innerHTML = message.length;
             },
         };
     }
+
 }
 
 export default new ProfileController();

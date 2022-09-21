@@ -15,7 +15,7 @@ class AdbDeviceController {
         this.devices = this.devices.bind(this);
         this.setProfileControllerInstance = this.setProfileControllerInstance.bind(this);
 
-        window.adb.track(this.fromIPCMain().devices.track);
+        window.electron.adb.track(this.fromIPCMain().devices.track);
 
         this.adbDeviceSelect.addEventListener("change", this.eventListeners().adbDeviceSelect.change);
 
@@ -71,20 +71,40 @@ class AdbDeviceController {
         return {
             devices: {
                 /**
-                 * @param {Object} adbDevices
+                 * @param {AdbDevice} adbDevices
                  */
-                track: async (adbDevices) => {
-                    this.devices().clear();
+                track: (adbDevices) => {
+
+                    this.startAdbServer.querySelector('.fa-play').classList.remove("visually-hidden");
+                    this.startAdbServer.querySelector('span.spinner-border').classList.add("visually-hidden");
+
                     if (adbDevices.error) {
-                        this.adbDeviceSelect.insertAdjacentHTML("beforeend", "<option>Server not running...</option>");
-                        this.startAdbServer.disabled = false;
+                        switch (adbDevices.error.code) {
+                            case "ENODEVICES":
+                                this.devices().clear();
+                                this.adbDeviceSelect.insertAdjacentHTML("beforeend", `<option>${adbDevices.error.message}</option>`);
+                                this.startAdbServer.disabled = true;
+                                this.adbDeviceCountBadge.innerHTML = 0;
+
+                                break;
+                            case "ECONNREFUSED":
+                                this.devices().clear();
+                                this.adbDeviceSelect.insertAdjacentHTML("beforeend", "<option>Server not running...</option>");
+                                this.startAdbServer.disabled = false;
+                                break;
+
+                            default:
+                                break;
+                        }
                         this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                         return;
                     }
+
                     this.startAdbServer.disabled = true;
                     this.stopAdbServer.disabled = !this.startAdbServer.disabled;
                     this.adbDeviceCountBadge.innerHTML = adbDevices.length;
-                    await adbDevices.forEach((d) => this.devices().add(d));
+                    this.devices().clear();
+                    adbDevices.forEach((d) => this.devices().add(d));
                     if (this.activeDevice === "") return;
                     if (this.adbDeviceSelect.innerHTML.includes(this.activeDevice)) this.adbDeviceSelect.value = this.activeDevice;
                 },
@@ -98,36 +118,43 @@ class AdbDeviceController {
                 setDeviceInfo: () => {
                     const deviceId = this.adbDeviceSelect.value;
                     const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model")
-                    window.shell.setAndroidDevice(deviceId, deviceModel);
+                    // window.shell.setAndroidDevice(deviceId, deviceModel);
+                    window.electron.shell.setAndroidDevice(deviceId, deviceModel);
                 },
             },
             server: {
                 start: () => {
-                    window.adb.server.start();
+                    this.startAdbServer.querySelector('span.spinner-border').classList.remove("visually-hidden");
+                    this.startAdbServer.querySelector('.fa-play').classList.add("visually-hidden");
+                    window.electron.adb.server.start();
                 },
                 stop: () => {
-                    window.adb.server.stop();
+                    window.electron.adb.server.stop();
                     this.adbDeviceCountBadge.classList.add("visually-hidden");
                 },
             },
             shell: {
                 local: () => {
                     this.toIPCMain().devices.setDeviceInfo();
-                    window.shell.openLocalShell();
+                    // window.shell.openLocalShell();
+                    window.electron.shell.openLocalShell();
                 },
                 remote: () => {
                     this.toIPCMain().devices.setDeviceInfo();
-                    window.shell.openDeviceShell();
+                    // window.shell.openDeviceShell();
+                    window.electron.shell.openDeviceShell();
                 },
                 rogcat: (profile, saveToFile) => {
                     this.toIPCMain().devices.setDeviceInfo();
                     const options = { activeProfile: profile, saveTraceToFile: saveToFile };
-                    window.shell.openRogcatShell(options);
+                    // window.shell.openRogcatShell(options);
+                    window.electron.shell.openRogcatShell(options);
                 },
             },
             trace: {
                 openTraceDirectory: () => {
-                    window.shell.openTraceLocation();
+                    // window.shell.openTraceLocation();
+                    window.electron.shell.openTraceLocation();
                 },
             },
         };
@@ -136,12 +163,8 @@ class AdbDeviceController {
     devices() {
         return {
             add: (d) => {
-                const { androidId, model, error } = d;
-                let option = `<option data-adb-model="${model}" value="${androidId}">${androidId} - ${model}</option>`;
-                if (error) {
-                    option = `<option value="-1">No devices connected...</option>`;
-                    this.adbDeviceCountBadge.innerHTML = 0;
-                }
+                const { androidId, model } = d;
+                const option = `<option data-adb-model="${model}" value="${androidId}">${androidId} - ${model}</option>`;
                 this.adbDeviceSelect.insertAdjacentHTML("beforeend", option);
                 this.adbDeviceCountBadge.classList.remove("visually-hidden");
             },

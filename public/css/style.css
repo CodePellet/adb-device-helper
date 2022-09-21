@@ -1,6 +1,6 @@
-@import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
-@import "../../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
-@import "../../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css";
+@import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "../../../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
+@import "../../../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css";
 
 ::-webkit-scrollbar {
     width: 0px;
@@ -15,8 +15,22 @@
         sans-serif;
 }
 
-.nav-pills .nav-link.active,
-.nav-pills .show > .nav-link {
+.nav-pills .nav-link.active {
     color: #fff !important;
     background-color: #212529;
+}
+
+.nav-link:not(.active) {
+    background-color: transparent;
+}
+
+/* Settings Window Styles */
+.settings.nav-link.active {
+    border-radius: 0;
+    border-bottom: 1px solid orange;
+}
+
+.settings.nav-link:not(.active) {
+    border-radius: 0;
+    border-bottom: 1px solid transparent;
 }

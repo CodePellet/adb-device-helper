@@ -4,22 +4,26 @@ import Toast from "../components/Toast/Toast.js";
 
 class MacroController {
     constructor() {
+        this.adbDeviceSelect = document.getElementById("deviceSelect");
         this.profileSelect = document.getElementById("profile-select");
-        this.removeProfileButton = document.querySelector(".btn-remove-profile");
 
         this.saveChangesButton = document.getElementById("saveMacroChanges");
         this.newMacroItemButton = document.getElementById("newMacroItem");
         this.tabPaneResults = document.querySelector("[data-bs-target='#tabPaneResults']");
 
+        // BADGES
+        this.tabPaneResultBadge = document.getElementById("tabPaneResultsBadge");
+        this.tabPaneAdbBadge = document.getElementById("tabPaneAdbBadge");
+
         this.fromIpcMain = this.fromIpcMain.bind(this);
         this.toIpcMain = this.toIpcMain.bind(this);
         this.macros = this.macros.bind(this);
 
-        window.macros.get(this.fromIpcMain().macros.get);
-        // window.macros.update(this.fromIpcMain().macros.update);
+        this.fromIpcMain().macros.get();
+
+        // window.electron.macro.get(this.fromIpcMain().macros.get);
 
         this.profileSelect.addEventListener("change", this.eventListeners().profileSelect.change);
-        this.removeProfileButton.addEventListener("click", this.eventListeners().removeProfileButton.click);
 
         this.newMacroItemButton.addEventListener("click", this.eventListeners().newListItemButton.click);
         this.saveChangesButton.addEventListener("click", this.eventListeners().saveChangesButton.click);
@@ -30,15 +34,22 @@ class MacroController {
     eventListeners() {
         return {
             newListItemButton: {
-                click: () => MacroListItem.append(),
+                click: () => {
+                    MacroListItem.append(".adb-macro-list", "", this.macros().execute, MacroListItem.delete);
+                },
             },
             saveChangesButton: {
                 click: () => this.macros().saveChanges(),
             },
             tabs: {
                 resultsTab: {
-                    shown: () => this.newMacroItemButton.disabled = true,
-                    hidden: () => this.newMacroItemButton.disabled = false
+                    shown: () => {
+                        this.newMacroItemButton.disabled = true;
+                        setTimeout(() => {
+                            this.tabPaneResultBadge.classList.add("visually-hidden")
+                        }, 2000);
+                    },
+                    hidden: () => { this.newMacroItemButton.disabled = false }
                 }
             },
             profileSelect: {
@@ -46,11 +57,6 @@ class MacroController {
                     const { value } = e.target;
                     this.macros().macroItems.show(value);
                 },
-            },
-            removeProfileButton: {
-                click: () => {
-                    this.macros().delete(this.profileSelect.value)
-                }
             }
         };
     }
@@ -58,8 +64,8 @@ class MacroController {
     fromIpcMain() {
         return {
             macros: {
-                get: (macros) => {
-                    this.macro = macros;
+                get: async () => {
+                    this.macro = await window.electron.macro.get();
                     this.macros().macroItems.show(this.profileSelect.value);
                 },
                 update: (macros) => {
@@ -74,17 +80,21 @@ class MacroController {
     toIpcMain() {
         return {
             macros: {
-                execute: (command) => {
-                    window.macros.execute(command, this.macros().showResults);
+                execute: async (command) => {
+                    const deviceId = this.adbDeviceSelect.value;
+                    const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model");
+                    window.electron.shell.setAndroidDevice(deviceId, deviceModel);
+                    const execResult = await window.electron.macro.execute(command);
+                    this.macros().showResults(execResult);
                 },
-                save: (macro = {}) => {
-                    window.macros.save(macro, this.fromIpcMain().macros.update);
+                save: async (macro = {}) => {
+                    this.macro = await window.electron.macro.save(macro);
+                    Toast.showSaveToast();
+                    this.macros().macroItems.show(macro.name);
                 },
-                delete: (macro) => {
-                    window.macros.delete(macro, (macros) => {
-                        this.macro = macros;
-                        this.macros().macroItems.show("default");
-                    });
+                delete: async (macro) => {
+                    this.macro = await window.electron.macro.delete(macro);
+                    this.macros().macroItems.show("default");
                 },
             },
         };
@@ -95,10 +105,9 @@ class MacroController {
 
             saveChanges: () => {
                 const profileName = document.getElementById("profile-select").value;
-                // let comment = document.querySelector(".rogcat-profile-comment input[type=text]").value;
                 const comment = "";
                 const adbMacros = document.querySelectorAll(".adb-macro-list input[type=text]");
-                const sshMacros = document.querySelectorAll(".ssh-macro-list input[type=text]");
+                // const sshMacros = document.querySelectorAll(".ssh-macro-list input[type=text]");
 
                 this.toIpcMain().macros.save({
                     name: profileName,
@@ -111,13 +120,14 @@ class MacroController {
                 this.toIpcMain().macros.execute(command);
             },
 
-            delete: (name) => {
-                this.toIpcMain().macros.delete(name);
-            },
+            delete: (name) => { this.toIpcMain().macros.delete(name); },
 
-            showResults(command, error, stdout, stderr) {
+            showResults: ({ command, error, stdout, stderr }) => {
                 const elementId = Math.floor(Math.random() * 100000);
                 const tabPaneResults = document.getElementById("tabPaneResults");
+                const deviceId = this.adbDeviceSelect.value;
+                const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model")
+
                 /**
                  * @type String
                  */
@@ -126,9 +136,9 @@ class MacroController {
 
                 tabPaneResults.insertAdjacentHTML(
                     "beforeend",
-                    `<div id="commandResultContainer_${elementId}" class="form-floating mb-2 d-flex align-items-center justify-content-center">
+                    `<div id="commandResultContainer_${elementId}" class="form-floating mb-2 d-flex align-items-center justify-content-center text-break">
                         <div id="textarea_${elementId}" class="form-control ${commandResultBG}" style="user-select: text; height: fit-content; --bg">${commandResult.replaceAll("\n", "<br/>")}</div>
-                        <label for="testarea_${elementId}" >${command}</label>
+                        <label for="testarea_${elementId}" ><strong>Command:</strong> ${command} - <strong>Device:</strong> ${deviceId} <strong>Model:</strong> ${deviceModel}</label>
                         <div class="position-absolute end-0 top-0 d-flex p-2">
                             <a id="button_clip_${elementId}" class="btn p-1" type="button"><i class="fas fa-clipboard fa-fw "></i></a>
                             <a id="button_trash_${elementId}" class="btn p-1 text-danger" type="button"><i class="fas fa-trash fa-fw "></i></a>
@@ -136,25 +146,30 @@ class MacroController {
                      </div>`
                 );
 
-                document.getElementById(`button_clip_${elementId}`).addEventListener("click", e => {
+                document.getElementById(`button_clip_${elementId}`).addEventListener("click", () => {
                     navigator.clipboard.writeText(commandResult);
                     Toast.showCopiedToClipboardToast();
                 });
 
-                document.getElementById(`button_trash_${elementId}`).addEventListener("click", e => {
+                document.getElementById(`button_trash_${elementId}`).addEventListener("click", () => {
                     document.getElementById(`commandResultContainer_${elementId}`).remove();
                 });
+                this.tabPaneResultBadge.classList.remove("visually-hidden");
+                Toast.showExecuteMacroToast(error);
             },
 
             macroItems: {
                 show: (profile) => {
-                    this.activeProfile = this.profileSelect.selectedIndex == -1 ? "default" : profile;
-                    const macroObj = this.macro.find(macro => macro.name == this.activeProfile);
+                    this.activeProfile = this.profileSelect.selectedIndex === -1 ? "default" : profile;
+                    const macroObj = this.macro.find(macro => macro.name === this.activeProfile);
 
                     MacroListItem.clear(".adb-macro-list");
                     MacroListItem.clear(".ssh-macro-list");
 
-                    macroObj?.adb.forEach((t) => MacroListItem.append(".adb-macro-list", t));
+                    macroObj?.adb.forEach((t) => {
+                        MacroListItem.append(".adb-macro-list", t, this.macros().execute, MacroListItem.delete);
+                    });
+                    this.tabPaneAdbBadge.innerHTML = macroObj?.adb.length;
                     // ssh.forEach((m) => MacroListItem.append(".ssh-macro-list", m));
                 },
             },
