@@ -52,11 +52,14 @@ const mainMenuTemplate: MenuItemConstructorOptions[] = [
                 role: "zoomOut",
             },
             {
+                role: "resetZoom",
+                label: "Reset Zoom"
+            },
+            {
                 type: "separator"
             },
             {
-                role: "resetZoom",
-                label: "Reset Zoom"
+                role: "togglefullscreen"
             }
         ]
     },
