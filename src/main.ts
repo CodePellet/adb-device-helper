@@ -97,6 +97,7 @@ const onDomReady = () => {
     let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
     if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
 
+    tracker.removeAllListeners();
     tracker.start();
 
     tracker
