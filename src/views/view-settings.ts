@@ -21,10 +21,10 @@ export class SettingsView {
             modal: true,
             webPreferences: {
                 sandbox: true,
-                preload: path.join(__dirname, "..", "preload.js")
+                preload: path.join(__dirname, "preload.js")
             }
         });
-        this.settingsWindow.loadFile(path.join(__dirname, "..", "..", "public", "views", "settings.html"));
+        this.settingsWindow.loadFile(path.resolve(__dirname, "..", "public", "views", "settings.html"));
         this.settingsWindow.on("ready-to-show", () => {
             this.settingsWindow.show();
         });

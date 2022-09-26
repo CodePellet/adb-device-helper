@@ -5,7 +5,7 @@ import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
 
-import { RogcatProfile } from "interfaces/common";
+import { RogcatProfile } from "../interfaces/common";
 export class RogcatProfiler {
 
     private static _instance: RogcatProfiler;

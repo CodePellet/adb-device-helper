@@ -1,6 +1,6 @@
 export default class ListFilterItem {
-    static getActiveList() {
-        return document.querySelector(".rogcat-filter-tabs .nav-link.active").getAttribute("data-bs-target");
+    public static getActiveList(): string | null | undefined {
+        return (document.querySelector(".rogcat-filter-tabs .nav-link.active") as HTMLButtonElement).getAttribute("data-bs-target");
     }
 
     /**
@@ -8,8 +8,8 @@ export default class ListFilterItem {
      * @param {string} [filterValue=''] - Optional - The value to write to the filter input
      * @memberof ListFilterItem
      */
-    static appendListItem(selector = `${ListFilterItem.getActiveList()} > ul`, filterValue = "") {
-        const listContainer = document.querySelector(selector);
+    public static appendListItem(selector: string = `${ListFilterItem.getActiveList()} > ul`, filterValue: string = ""): void {
+        const listContainer: HTMLUListElement = document.querySelector(selector) as HTMLUListElement;
         listContainer.insertAdjacentHTML(
             "beforeend",
             `<li class="list-group-item">
@@ -24,17 +24,16 @@ export default class ListFilterItem {
             </div>
         </li>`
         );
-        listContainer
-            .querySelector("li:last-child button.btn-remove-list-item")
-            .addEventListener("click", ListFilterItem.deleteListFilterItem);
+        (listContainer.querySelector("li:last-child button.btn-remove-list-item") as HTMLButtonElement)!
+            .addEventListener("click", this.deleteListFilterItem);
     }
 
-    static clear(selector) {
-        const listContainer = document.querySelector(selector);
+    public static clear(selector: string): void {
+        const listContainer: HTMLUListElement = document.querySelector(selector) as HTMLUListElement;
         listContainer.innerHTML = "";
     }
 
-    static deleteListFilterItem(listItem) {
-        listItem.target.closest("li").remove();
+    public static deleteListFilterItem(listItem: MouseEvent): void {
+        (listItem.target as HTMLButtonElement).closest("li")?.remove();
     }
 }

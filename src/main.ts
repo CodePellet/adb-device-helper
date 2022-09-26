@@ -4,7 +4,7 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions, Menu, MenuItemCons
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
-import "./handler/ipcMainHandler";
+import "./handler/IpcMainHandler";
 import { EnvController } from "./Modules/controller/adbdh-env-controller";
 import { Views, ViewType } from "./views/views";
 
@@ -19,7 +19,6 @@ const mainWindowOptions: BrowserWindowConstructorOptions = {
     icon: path.join(app.getAppPath(), "assets", "icons", "win", "icon.ico"),
     title: `ADB-Device-Helper - v${app.getVersion()}`,
     webPreferences: {
-        nodeIntegration: false,
         contextIsolation: true,
         sandbox: true,
         preload: path.join(__dirname, "preload.js"),
@@ -78,21 +77,6 @@ const mainMenuTemplate: MenuItemConstructorOptions[] = [
 log.debug("[Main]", "Setting up environment");
 env.setup();
 
-const createWindow = () => {
-    mainWindow = new BrowserWindow(mainWindowOptions);
-    // Load html into window
-    mainWindow.loadFile(path.join(__dirname, "..", "public", "views", "main.html"));
-    mainWindow.setMenu(Menu.buildFromTemplate(mainMenuTemplate))
-
-    if (!app.isPackaged) mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
-
-    mainWindow.on("close", () => { console.log(mainWindow.getBounds()); });
-
-    mainWindow.on("closed", () => app.quit());
-
-    mainWindow.webContents.on("dom-ready", onDomReady);
-}
-
 const onDomReady = () => {
     let prevError: NodeJS.ErrnoException = { name: "", message: "", code: "" };
     if (!fs.existsSync(env.tmpPath)) fs.mkdirSync(env.tmpPath);
@@ -111,11 +95,28 @@ const onDomReady = () => {
         .on("error", (error: NodeJS.ErrnoException) => {
             if (prevError.code !== error.code) {
                 prevError = error;
-                log.error("[Tracker:Error]", { error: { ...error } });
-                mainWindow.webContents.send("adb:track-devices", { error: { ...error } });
+                log.error("[Tracker:Error]", [{ error: { ...error } }]);
+                mainWindow.webContents.send("adb:track-devices", [{ error: { ...error } }]);
             }
         });
 };
+
+const createWindow = () => {
+    mainWindow = new BrowserWindow(mainWindowOptions);
+    // Load html into window
+    mainWindow.loadFile(path.resolve(__dirname, "..", "public", "views", "main.html"));
+    mainWindow.setMenu(Menu.buildFromTemplate(mainMenuTemplate))
+
+    if (!app.isPackaged) mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
+
+    mainWindow.on("close", () => { console.log(mainWindow.getBounds()); });
+
+    mainWindow.on("closed", () => app.quit());
+
+    mainWindow.webContents.on("dom-ready", onDomReady);
+}
+
+
 
 // Listen for app to be ready
 app.on("ready", createWindow);

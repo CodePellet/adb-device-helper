@@ -77,7 +77,7 @@ export class MacroController {
     }
 
     // public delete(profile: any, callback: (arg0: Object[]) => void): void {
-    public delete(profile: any): Object {
+    public delete(profile: string): Object {
         log.info("[MacroController]", "Delete profile", profile);
         db.deleteRow(DATABASENAME, { name: profile }, (succ: any, msg: any) => {
             if (succ) { log.info("[MacroController]", "Delete row", profile, "from database", "Result:", msg); return; }

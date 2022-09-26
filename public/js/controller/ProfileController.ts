@@ -1,22 +1,39 @@
 /* eslint-disable import/extensions */
-import ListFilterItem from "../components/ListFilterItem/ListFilterItem.js";
-import Toast from "../components/Toast/Toast.js";
-import MacroController from "./MacroController.js";
+import ListFilterItem from "../components/ListFilterItem/ListFilterItem";
+import Toast from "../components/Toast/Toast";
+import { MacroController } from "./MacroController";
 
-class ProfileController {
-    constructor() {
-        this.profileSelect = document.getElementById("profile-select");
-        this.defaultProfileGroup = document.querySelector(".profile-select-default-group");
-        this.customProfileGroup = document.querySelector(".profile-select-custom-group");
-        this.removeProfileButton = document.querySelector(".btn-remove-profile");
-        this.addProfileButton = document.querySelector(".btn-add-profile");
-        this.saveChangesButton = document.getElementById("saveChanges");
-        this.newListItemButton = document.getElementById("newListItem");
+export class ProfileController {
+
+    private static _instance: ProfileController;
+
+    private profileSelect: HTMLSelectElement;
+    private defaultProfileGroup: HTMLOptGroupElement;
+    private customProfileGroup: HTMLOptGroupElement;
+    private removeProfileButton: HTMLButtonElement;
+    private addProfileButton: HTMLButtonElement;
+    private saveChangesButton: HTMLButtonElement;
+    private newListItemButton: HTMLButtonElement;
+    private tabPaneTagBadge: HTMLSpanElement;
+    private tabPaneMessageBadge: HTMLSpanElement;
+    private tomlProfiles: any;
+    private activeProfile: string;
+
+    private constructor() {
+        this.activeProfile = "";
+        this.profileSelect = document.getElementById("profile-select") as HTMLSelectElement;
+        this.defaultProfileGroup = document.querySelector(".profile-select-default-group") as HTMLOptGroupElement;
+        this.customProfileGroup = document.querySelector(".profile-select-custom-group") as HTMLOptGroupElement;
+        this.removeProfileButton = document.querySelector(".btn-remove-profile") as HTMLButtonElement;
+        this.addProfileButton = document.querySelector(".btn-add-profile") as HTMLButtonElement;
+        this.saveChangesButton = document.getElementById("saveChanges") as HTMLButtonElement;
+        this.newListItemButton = document.getElementById("newListItem") as HTMLButtonElement;
 
         // BADGES
-        this.tabPaneTagBadge = document.getElementById("tabPaneTagBadge");
-        this.tabPaneMessageBadge = document.getElementById("tabPaneMessageBadge");
+        this.tabPaneTagBadge = document.getElementById("tabPaneTagBadge") as HTMLSpanElement;
+        this.tabPaneMessageBadge = document.getElementById("tabPaneMessageBadge") as HTMLSpanElement;
 
+        //@ts-ignore
         window.electron.profiler.settingsProfileUpdate(() => this.fromIPCMain().getProfiles());
 
         this.fromIPCMain().getProfiles();
@@ -32,23 +49,27 @@ class ProfileController {
         this.saveChangesButton.addEventListener("click", this.eventListeners().saveChangesButton.click);
     }
 
+    public static getInstance(): ProfileController {
+        return this._instance || (this._instance = new this());
+    }
+
     eventListeners() {
         return {
             profileSelect: {
-                change: (e) => {
-                    const { value } = e.target;
+                change: (event: Event) => {
+                    const { value } = event.target as HTMLSelectElement;
                     this.removeProfileButton.disabled = value === "default";
                     this.profiles().showTagsAndMessages(value);
                 },
             },
             addProfileButton: {
-                click: () => {
-                    const newProfileNameInput = document.getElementById("newProfileName");
-                    const profileSelect = document.getElementById("profile-select");
-                    const newProfileIcon = this.addProfileButton.querySelector("svg");
+                click: (event: MouseEvent) => {
+                    const newProfileNameInput: HTMLInputElement = document.getElementById("newProfileName") as HTMLInputElement;
+                    // const profileSelect = document.getElementById("profile-select");
+                    const newProfileIcon: SVGElement = this.addProfileButton.querySelector("svg") as SVGElement;
 
                     if (newProfileIcon.classList.contains("fa-plus")) {
-                        profileSelect.classList.add("visually-hidden");
+                        this.profileSelect.classList.add("visually-hidden");
                         newProfileNameInput.classList.remove("visually-hidden");
                         newProfileIcon.classList.toggle("fa-check");
                         newProfileNameInput.focus();
@@ -56,7 +77,7 @@ class ProfileController {
                     }
 
                     if (newProfileIcon.classList.contains("fa-check")) {
-                        profileSelect.classList.remove("visually-hidden");
+                        this.profileSelect.classList.remove("visually-hidden");
                         newProfileNameInput.classList.add("visually-hidden");
                         newProfileIcon.classList.toggle("fa-plus");
                         if (newProfileNameInput.value !== "") this.profiles().create(newProfileNameInput.value);
@@ -65,13 +86,13 @@ class ProfileController {
                 },
             },
             removeProfileButton: {
-                click: () => this.profiles().delete(this.profileSelect.value),
+                click: (event: MouseEvent) => this.profiles().delete(this.profileSelect.value),
             },
             newListItemButton: {
-                click: () => ListFilterItem.appendListItem(),
+                click: (event: MouseEvent) => ListFilterItem.appendListItem(),
             },
             saveChangesButton: {
-                click: () => this.profiles().saveChanges(),
+                click: (event: MouseEvent) => this.profiles().saveChanges(),
             },
         };
     }
@@ -79,6 +100,7 @@ class ProfileController {
     fromIPCMain() {
         return {
             getProfiles: async () => {
+                //@ts-ignore
                 this.tomlProfiles = await window.electron.profiler.getProfiles();
                 this.profiles().addProfilesToSelectMenu();
                 this.profiles().showTagsAndMessages("default");
@@ -88,11 +110,12 @@ class ProfileController {
 
     profiles() {
         return {
-            add: (group, name) => {
+            add: (group: HTMLOptGroupElement, name: string) => {
                 group.insertAdjacentHTML("beforeend", `<option value="${name}">${name}</option>`);
             },
 
-            create: async (name, comment = "", tag = [], message = []) => {
+            create: async (name: string, comment: string = "", tag: string[] = [], message: string[] = []) => {
+                //@ts-ignore
                 this.tomlProfiles = await window.electron.profiler.create({
                     name,
                     data: {
@@ -105,18 +128,20 @@ class ProfileController {
             },
 
             saveChanges: async () => {
-                const profileName = document.getElementById("profile-select").value;
+                // const profileName = document.getElementById("profile-select").value;
+                const profileName = this.profileSelect.value;
                 // let comment = document.querySelector(".rogcat-profile-comment input[type=text]").value;
                 const comment = "";
-                const tags = document.querySelectorAll(".tag-list input[type=text]");
-                const messages = document.querySelectorAll(".message-list input[type=text]");
+                const tags: NodeListOf<HTMLInputElement> = document.querySelectorAll(".tag-list input[type=text]");
+                const messages: NodeListOf<HTMLInputElement> = document.querySelectorAll(".message-list input[type=text]");
 
+                //@ts-ignore
                 const saveResult = await window.electron.profiler.save({
                     name: profileName,
                     data: {
                         comment,
-                        tag: Array.from(tags, (tag) => tag.value).filter((t) => t !== ""),
-                        message: Array.from(messages, (message) => message.value).filter((m) => m !== ""),
+                        tag: Array.from(tags, (tag: HTMLInputElement) => tag.value).filter((t) => t !== ""),
+                        message: Array.from(messages, (message: HTMLInputElement) => message.value).filter((m) => m !== ""),
                     }
                 });
 
@@ -129,14 +154,15 @@ class ProfileController {
 
             get: () => this.tomlProfiles,
 
-            delete: async (name) => {
+            delete: async (name: string) => {
+                //@ts-ignore
                 const { success, data } = await window.electron.profiler.delete(name);
 
                 if (!success) {
                     this.fromIPCMain().getProfiles();
                 }
 
-                MacroController.macros().delete(name);
+                MacroController.getInstance().macros().delete(name);
                 this.tomlProfiles = data;
                 this.profiles().addProfilesToSelectMenu();
                 this.profiles().showTagsAndMessages("default");
@@ -153,15 +179,15 @@ class ProfileController {
                 });
             },
 
-            showTagsAndMessages: (profile) => {
+            showTagsAndMessages: (profile: string) => {
                 this.activeProfile = profile;
                 const { tag, message } = this.tomlProfiles.profile[profile];
 
                 ListFilterItem.clear(".tag-list");
                 ListFilterItem.clear(".message-list");
 
-                tag.forEach((t) => ListFilterItem.appendListItem(".tag-list", t));
-                message.forEach((m) => ListFilterItem.appendListItem(".message-list", m));
+                tag.forEach((t: string) => ListFilterItem.appendListItem(".tag-list", t));
+                message.forEach((m: string) => ListFilterItem.appendListItem(".message-list", m));
 
                 // Show number of items in badge counter
                 this.tabPaneTagBadge.innerHTML = tag.length;
@@ -171,5 +197,3 @@ class ProfileController {
     }
 
 }
-
-export default new ProfileController();

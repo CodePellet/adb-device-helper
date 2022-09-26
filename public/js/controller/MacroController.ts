@@ -1,19 +1,32 @@
 /* eslint-disable import/extensions */
-import MacroListItem from "../components/MacroListItem/MacroListItem.js";
-import Toast from "../components/Toast/Toast.js";
+import MacroListItem from "../components/MacroListItem/MacroListItem";
+import Toast from "../components/Toast/Toast";
 
-class MacroController {
-    constructor() {
-        this.adbDeviceSelect = document.getElementById("deviceSelect");
-        this.profileSelect = document.getElementById("profile-select");
+export class MacroController {
 
-        this.saveChangesButton = document.getElementById("saveMacroChanges");
-        this.newMacroItemButton = document.getElementById("newMacroItem");
-        this.tabPaneResults = document.querySelector("[data-bs-target='#tabPaneResults']");
+    private static _instance: MacroController;
+
+    private adbDeviceSelect: HTMLSelectElement;
+    private profileSelect: HTMLSelectElement;
+    private saveChangesButton: HTMLButtonElement;
+    private newMacroItemButton: HTMLButtonElement;
+    private tabPaneResults: HTMLButtonElement;
+    private tabPaneResultBadge: HTMLSpanElement;
+    private tabPaneAdbBadge: HTMLSpanElement;
+    private macro: any;
+    private activeProfile: any;
+
+    private constructor() {
+        this.adbDeviceSelect = document.getElementById("deviceSelect") as HTMLSelectElement;
+        this.profileSelect = document.getElementById("profile-select") as HTMLSelectElement;
+
+        this.saveChangesButton = document.getElementById("saveMacroChanges") as HTMLButtonElement;
+        this.newMacroItemButton = document.getElementById("newMacroItem") as HTMLButtonElement;
+        this.tabPaneResults = document.querySelector("[data-bs-target='#tabPaneResults']") as HTMLButtonElement;
 
         // BADGES
-        this.tabPaneResultBadge = document.getElementById("tabPaneResultsBadge");
-        this.tabPaneAdbBadge = document.getElementById("tabPaneAdbBadge");
+        this.tabPaneResultBadge = document.getElementById("tabPaneResultsBadge") as HTMLSpanElement;
+        this.tabPaneAdbBadge = document.getElementById("tabPaneAdbBadge") as HTMLSpanElement;
 
         this.fromIpcMain = this.fromIpcMain.bind(this);
         this.toIpcMain = this.toIpcMain.bind(this);
@@ -31,7 +44,11 @@ class MacroController {
         this.tabPaneResults.addEventListener("hide.bs.tab", this.eventListeners().tabs.resultsTab.hidden)
     }
 
-    eventListeners() {
+    public static getInstance(): MacroController {
+        return this._instance || (this._instance = new this());
+    }
+
+    private eventListeners() {
         return {
             newListItemButton: {
                 click: () => {
@@ -53,22 +70,23 @@ class MacroController {
                 }
             },
             profileSelect: {
-                change: (e) => {
-                    const { value } = e.target;
+                change: (e: Event) => {
+                    const { value } = e.target as HTMLSelectElement;
                     this.macros().macroItems.show(value);
                 },
             }
         };
     }
 
-    fromIpcMain() {
+    private fromIpcMain() {
         return {
             macros: {
                 get: async () => {
+                    //@ts-ignore
                     this.macro = await window.electron.macro.get();
                     this.macros().macroItems.show(this.profileSelect.value);
                 },
-                update: (macros) => {
+                update: (macros: Object[]) => {
                     this.macro = macros;
                     Toast.showSaveToast();
                 },
@@ -77,22 +95,30 @@ class MacroController {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    toIpcMain() {
+    private toIpcMain() {
         return {
             macros: {
-                execute: async (command) => {
+                execute: async (command: string) => {
                     const deviceId = this.adbDeviceSelect.value;
                     const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model");
+                    //@ts-ignore
                     window.electron.shell.setAndroidDevice(deviceId, deviceModel);
+                    //@ts-ignore
                     const execResult = await window.electron.macro.execute(command);
                     this.macros().showResults(execResult);
                 },
-                save: async (macro = {}) => {
+                save: async (macro: { name: string, comment: string, adb: string[] } = {
+                    name: "",
+                    comment: "",
+                    adb: []
+                }) => {
+                    //@ts-ignore
                     this.macro = await window.electron.macro.save(macro);
                     Toast.showSaveToast();
                     this.macros().macroItems.show(macro.name);
                 },
-                delete: async (macro) => {
+                delete: async (macro: string) => {
+                    //@ts-ignore
                     this.macro = await window.electron.macro.delete(macro);
                     this.macros().macroItems.show("default");
                 },
@@ -100,31 +126,31 @@ class MacroController {
         };
     }
 
-    macros() {
+    public macros() {
         return {
-
             saveChanges: () => {
-                const profileName = document.getElementById("profile-select").value;
-                const comment = "";
-                const adbMacros = document.querySelectorAll(".adb-macro-list input[type=text]");
+                // const profileName = document.getElementById("profile-select").value;
+                const profileName: string = this.profileSelect.value;
+                const comment: string = "";
+                const adbMacros: NodeListOf<HTMLInputElement> = document.querySelectorAll(".adb-macro-list input[type=text]");
                 // const sshMacros = document.querySelectorAll(".ssh-macro-list input[type=text]");
 
                 this.toIpcMain().macros.save({
                     name: profileName,
                     comment,
-                    adb: Array.from(adbMacros, (adb) => adb.value).filter((command) => command !== "")
+                    adb: Array.from(adbMacros, (adb: HTMLInputElement) => adb.value).filter((command) => command !== "")
                 })
             },
 
-            execute: (command) => {
+            execute: (command: string) => {
                 this.toIpcMain().macros.execute(command);
             },
 
-            delete: (name) => { this.toIpcMain().macros.delete(name); },
+            delete: (name: string) => { this.toIpcMain().macros.delete(name); },
 
-            showResults: ({ command, error, stdout, stderr }) => {
+            showResults: ({ command, error, stdout, stderr }: { command: string, error: Error, stdout: string, stderr: string }) => {
                 const elementId = Math.floor(Math.random() * 100000);
-                const tabPaneResults = document.getElementById("tabPaneResults");
+                // const tabPaneResults = document.getElementById("tabPaneResults");
                 const deviceId = this.adbDeviceSelect.value;
                 const deviceModel = this.adbDeviceSelect?.querySelector(`option[value='${this.adbDeviceSelect.value}']`)?.getAttribute("data-adb-model")
 
@@ -134,7 +160,7 @@ class MacroController {
                 const commandResult = error ? stderr : stdout;
                 const commandResultBG = error ? "bg-danger bg-opacity-25" : "bg-success bg-opacity-25";
 
-                tabPaneResults.insertAdjacentHTML(
+                this.tabPaneResults.insertAdjacentHTML(
                     "beforeend",
                     `<div id="commandResultContainer_${elementId}" class="form-floating mb-2 d-flex align-items-center justify-content-center text-break">
                         <div id="textarea_${elementId}" class="form-control ${commandResultBG}" style="user-select: text; height: fit-content; --bg">${commandResult.replaceAll("\n", "<br/>")}</div>
@@ -145,28 +171,30 @@ class MacroController {
                         </div>
                      </div>`
                 );
-
-                document.getElementById(`button_clip_${elementId}`).addEventListener("click", () => {
+                const clipButton = document.getElementById(`button_clip_${elementId}`) as HTMLButtonElement;
+                clipButton.addEventListener("click", () => {
                     navigator.clipboard.writeText(commandResult);
                     Toast.showCopiedToClipboardToast();
                 });
 
-                document.getElementById(`button_trash_${elementId}`).addEventListener("click", () => {
-                    document.getElementById(`commandResultContainer_${elementId}`).remove();
+                const deleteButton = document.getElementById(`button_trash_${elementId}`) as HTMLButtonElement;
+                deleteButton.addEventListener("click", () => {
+                    const elementToDelete = document.getElementById(`commandResultContainer_${elementId}`) as HTMLElement;
+                    elementToDelete.remove();
                 });
                 this.tabPaneResultBadge.classList.remove("visually-hidden");
                 Toast.showExecuteMacroToast(error);
             },
 
             macroItems: {
-                show: (profile) => {
+                show: (profile: string) => {
                     this.activeProfile = this.profileSelect.selectedIndex === -1 ? "default" : profile;
-                    const macroObj = this.macro.find(macro => macro.name === this.activeProfile);
+                    const macroObj = this.macro.find((macro: any) => macro.name === this.activeProfile);
 
                     MacroListItem.clear(".adb-macro-list");
                     MacroListItem.clear(".ssh-macro-list");
 
-                    macroObj?.adb.forEach((t) => {
+                    macroObj?.adb.forEach((t: string) => {
                         MacroListItem.append(".adb-macro-list", t, this.macros().execute, MacroListItem.delete);
                     });
                     this.tabPaneAdbBadge.innerHTML = macroObj?.adb.length;
@@ -176,5 +204,3 @@ class MacroController {
         };
     }
 }
-
-export default new MacroController();

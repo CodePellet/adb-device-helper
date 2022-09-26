@@ -1,9 +1,9 @@
 import { JsonMap } from "@iarna/toml/index";
 import { app, ipcMain } from "electron";
-import { AndroidDevice } from "interfaces/common";
-import { RogcatProfiler } from "../Modules/adbdh-rogcat-profiler";
-import { MacroController } from "../Modules/controller/adbdh-macro-controller";
-import { ShellController } from "../Modules/controller/adbdh-shell-controller";
+import { AndroidDevice } from "../interfaces/common";
+import { RogcatProfiler } from "../modules/adbdh-rogcat-profiler";
+import { MacroController } from "../modules/controller/adbdh-macro-controller";
+import { ShellController } from "../modules/controller/adbdh-shell-controller";
 
 const shellController = ShellController.getInstance();
 const rogcatProfiler = RogcatProfiler.getInstance();

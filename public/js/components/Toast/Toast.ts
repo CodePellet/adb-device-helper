@@ -1,15 +1,22 @@
+import { Toast as BToast } from "bootstrap";
+
 class Toast {
 
-    constructor() {
-        this.toastContainer = document.getElementById("toast_container");
+    private static _instance: Toast;
+    private toastContainer: HTMLElement = document.getElementById("toast_container") as HTMLElement;
 
+    private constructor() {
         this.ToastTemplates = this.ToastTemplates.bind(this);
     }
 
+    public static getInstance(): Toast {
+        return this._instance || (this._instance = new this());
+    }
+
     // eslint-disable-next-line class-methods-use-this
-    ToastTemplates() {
+    private ToastTemplates() {
         return {
-            clipToast: (randomId) => `<div id="clipToast_${randomId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            clipToast: (randomId: number) => `<div id="clipToast_${randomId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="toast-header">
                                 <div class="rounded p-2 me-2 bg-success" alt="..."></div>
                                 <strong class="me-auto">Success</strong>
@@ -44,7 +51,7 @@ class Toast {
                             </div>
                             <div class="toast-body">Profiles exported successfully!</div>
                         </div>`,
-            executeMacroToast: (error) => `<div id="executeMacroToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            executeMacroToast: (error: Object) => `<div id="executeMacroToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="toast-header">
                                 <div class="rounded p-2 me-2 ${error ? "bg-danger" : "bg-success"}" alt="..."></div>
                                 <strong class="me-auto">${error ? "Error" : "Success"}</strong>
@@ -56,45 +63,45 @@ class Toast {
         }
     }
 
-    showCopiedToClipboardToast() {
+    public showCopiedToClipboardToast() {
         const randomToastId = Math.floor(Math.random() * 1000000);
-        this.toastContainer.insertAdjacentHTML(
+        this.toastContainer?.insertAdjacentHTML(
             "beforeend",
             this.ToastTemplates().clipToast(randomToastId)
         );
         this.showToast(`clipToast_${randomToastId}`);
     }
 
-    showSaveToast() {
+    public showSaveToast() {
         if (document.getElementById("saveToast") == null)
-            this.toastContainer.insertAdjacentHTML(
+            this.toastContainer?.insertAdjacentHTML(
                 "beforeend",
                 this.ToastTemplates().saveToast()
             );
         this.showToast(`saveToast`);
     }
 
-    showImportToast() {
+    public showImportToast() {
         if (document.getElementById("importToast") == null)
-            this.toastContainer.insertAdjacentHTML(
+            this.toastContainer?.insertAdjacentHTML(
                 "beforeend",
                 this.ToastTemplates().importToast()
             );
         this.showToast(`importToast`);
     }
 
-    showExportToast() {
+    public showExportToast() {
         if (document.getElementById("exportToast") == null)
-            this.toastContainer.insertAdjacentHTML(
+            this.toastContainer?.insertAdjacentHTML(
                 "beforeend",
                 this.ToastTemplates().exportToast()
             );
         this.showToast(`exportToast`);
     }
 
-    showExecuteMacroToast(error) {
+    public showExecuteMacroToast(error: Object) {
         if (document.getElementById("executeMacroToast") == null)
-            this.toastContainer.insertAdjacentHTML(
+            this.toastContainer?.insertAdjacentHTML(
                 "beforeend",
                 this.ToastTemplates().executeMacroToast(error)
             );
@@ -102,19 +109,20 @@ class Toast {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    disposeToast(toastEl) {
+    private disposeToast(toastEl: HTMLElement) {
         toastEl.addEventListener("hidden.bs.toast", () => {
             toastEl.remove();
         })
     }
 
-    showToast(toastElId) {
-        const toastEl = document.getElementById(toastElId);
-        // eslint-disable-next-line no-undef
-        const bsToast = new bootstrap.Toast(toastEl);
+    private showToast(toastElId: string) {
+        const toastEl: HTMLElement = document.getElementById(toastElId)!;
+        // TODO: Fix bootstrap import error
+        //@ts-ignore
+        const bsToast = new BToast(toastEl);
         bsToast.show();
         this.disposeToast(toastEl);
     }
 }
 
-export default new Toast();
+export default Toast.getInstance();

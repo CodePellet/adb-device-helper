@@ -1,6 +1,6 @@
 export default class MacroListItem {
-    static getActiveList() {
-        return document.querySelector(".macro-tabs .nav-link.active").getAttribute("data-bs-target");
+    public static getActiveList(): string | null | undefined {
+        return (document.querySelector(".macro-tabs .nav-link.active") as HTMLButtonElement).getAttribute("data-bs-target");
     }
 
     /**
@@ -10,8 +10,8 @@ export default class MacroListItem {
      * @param {Function} deleteButtonClickEvent - Function to call, when delete button is clicked
      * @memberof MacroListItem
      */
-    static append(selector = `${MacroListItem.getActiveList()} > ul`, filterValue = "", execButtonClickEvent, deleteButtonClickEvent) {
-        const listContainer = document.querySelector(selector);
+    public static append(selector: string = `${MacroListItem.getActiveList()} > ul`, filterValue: string = "", execButtonClickEvent: (command: string) => void, deleteButtonClickEvent: (event: MouseEvent) => void): void {
+        const listContainer: HTMLUListElement = document.querySelector(selector) as HTMLUListElement;
         listContainer.insertAdjacentHTML(
             "beforeend",
             `<li class="list-group-item">
@@ -32,22 +32,26 @@ export default class MacroListItem {
             </li>`
         );
 
-        listContainer.querySelector("li:last-child button.btn-run-macro-item").addEventListener("click", (element) => {
-            const command = element.target.closest("li").querySelector("input[type=text]").value;
-            execButtonClickEvent(command);
-        });
-        listContainer.querySelector("li:last-child button.btn-remove-macro-item").addEventListener("click", deleteButtonClickEvent);
+        (listContainer.querySelector("li:last-child button.btn-run-macro-item") as HTMLButtonElement)!
+            .addEventListener("click", (element: MouseEvent) => {
+                const button: HTMLButtonElement = (element.target as HTMLButtonElement);
+                const input = button.closest("li")?.querySelector("input[type=text]") as HTMLInputElement;
+                const command = input!.value;
+                execButtonClickEvent(command);
+            });
+        (listContainer.querySelector("li:last-child button.btn-remove-macro-item") as HTMLButtonElement)
+            .addEventListener("click", deleteButtonClickEvent);
 
 
         // return { execButton: listContainer.querySelector("li:last-child button.btn-run-macro-item"), deleteButton: listContainer.querySelector("li:last-child button.btn-remove-macro-item") }
     }
 
-    static clear(selector) {
-        const listContainer = document.querySelector(selector);
+    public static clear(selector: string): void {
+        const listContainer: HTMLUListElement = document.querySelector(selector) as HTMLUListElement;
         listContainer.innerHTML = "";
     }
 
-    static delete(listItem) {
-        listItem.target.closest("li").remove();
+    public static delete(listItem: MouseEvent): void {
+        (listItem.target as HTMLButtonElement).closest("li")?.remove();
     }
 }
