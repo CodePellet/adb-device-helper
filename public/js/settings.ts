@@ -1,8 +1,8 @@
-import "../css/style.css";
+import "@Style/style.css";
 
 import "@fortawesome/fontawesome-free";
 import "bootstrap";
 
-import { SettingsController } from "./controller/SettingsController";
+import { SettingsController } from "@Controller/SettingsController";
 SettingsController.getInstance();
 

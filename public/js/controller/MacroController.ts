@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
-import MacroListItem from "../components/MacroListItem/MacroListItem";
-import Toast from "../components/Toast/Toast";
+import MacroListItem from "@Components/MacroListItem";
+import Toast from "@Components/Toast";
 
 export class MacroController {
 

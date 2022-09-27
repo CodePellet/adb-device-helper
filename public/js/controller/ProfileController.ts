@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
-import ListFilterItem from "../components/ListFilterItem/ListFilterItem";
-import Toast from "../components/Toast/Toast";
-import { MacroController } from "./MacroController";
+import FilterListItem from "@Components/FilterListItem";
+import Toast from "@Components/Toast";
+import { MacroController } from "@Controller/MacroController";
 
 export class ProfileController {
 
@@ -89,7 +89,7 @@ export class ProfileController {
                 click: (event: MouseEvent) => this.profiles().delete(this.profileSelect.value),
             },
             newListItemButton: {
-                click: (event: MouseEvent) => ListFilterItem.appendListItem(),
+                click: (event: MouseEvent) => FilterListItem.appendListItem(),
             },
             saveChangesButton: {
                 click: (event: MouseEvent) => this.profiles().saveChanges(),
@@ -183,11 +183,11 @@ export class ProfileController {
                 this.activeProfile = profile;
                 const { tag, message } = this.tomlProfiles.profile[profile];
 
-                ListFilterItem.clear(".tag-list");
-                ListFilterItem.clear(".message-list");
+                FilterListItem.clear(".tag-list");
+                FilterListItem.clear(".message-list");
 
-                tag.forEach((t: string) => ListFilterItem.appendListItem(".tag-list", t));
-                message.forEach((m: string) => ListFilterItem.appendListItem(".message-list", m));
+                tag.forEach((t: string) => FilterListItem.appendListItem(".tag-list", t));
+                message.forEach((m: string) => FilterListItem.appendListItem(".message-list", m));
 
                 // Show number of items in badge counter
                 this.tabPaneTagBadge.innerHTML = tag.length;

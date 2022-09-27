@@ -1,4 +1,4 @@
-export default class ListFilterItem {
+export default class FilterListItem {
     public static getActiveList(): string | null | undefined {
         return (document.querySelector(".rogcat-filter-tabs .nav-link.active") as HTMLButtonElement).getAttribute("data-bs-target");
     }
@@ -6,9 +6,9 @@ export default class ListFilterItem {
     /**
      * @param {String} listContainer - Optional - The querySelector for the list container
      * @param {string} [filterValue=''] - Optional - The value to write to the filter input
-     * @memberof ListFilterItem
+     * @memberof FilterListItem
      */
-    public static appendListItem(selector: string = `${ListFilterItem.getActiveList()} > ul`, filterValue: string = ""): void {
+    public static appendListItem(selector: string = `${FilterListItem.getActiveList()} > ul`, filterValue: string = ""): void {
         const listContainer: HTMLUListElement = document.querySelector(selector) as HTMLUListElement;
         listContainer.insertAdjacentHTML(
             "beforeend",
@@ -25,7 +25,7 @@ export default class ListFilterItem {
         </li>`
         );
         (listContainer.querySelector("li:last-child button.btn-remove-list-item") as HTMLButtonElement)!
-            .addEventListener("click", this.deleteListFilterItem);
+            .addEventListener("click", this.deleteFilterListItem);
     }
 
     public static clear(selector: string): void {
@@ -33,7 +33,7 @@ export default class ListFilterItem {
         listContainer.innerHTML = "";
     }
 
-    public static deleteListFilterItem(listItem: MouseEvent): void {
+    public static deleteFilterListItem(listItem: MouseEvent): void {
         (listItem.target as HTMLButtonElement).closest("li")?.remove();
     }
 }
