@@ -5,7 +5,7 @@ import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
 import "./handler/IpcMainHandler";
-import { EnvController } from "./Modules/controller/adbdh-env-controller";
+import { EnvController } from "./modules/controller/adbdh-env-controller";
 import { Views, ViewType } from "./views/views";
 
 
