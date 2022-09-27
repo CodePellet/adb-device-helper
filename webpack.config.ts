@@ -1,12 +1,16 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import * as webpack from "webpack";
 
-/** @type {import("webpack").Configuration} */
-module.exports = [
+const config: webpack.Configuration[] = [
     /** MAIN THREAD */
     {
         entry: "./src/main.ts",
         target: "electron-main",
-        resolve: { extensions: [".ts", ".js"] },
+        resolve: {
+            extensions: [".ts", ".js"],
+            plugins: [new TsconfigPathsPlugin()]
+        },
         module: {
             rules: [{
                 test: /\.ts$/,
@@ -17,13 +21,16 @@ module.exports = [
         output: {
             path: `${__dirname}/dist/src`,
             filename: "main.js",
-        }
+        },
     },
     /** ELECTRON PRELOAD */
     {
         entry: "./src/preload.ts",
         target: "electron-preload",
-        resolve: { extensions: [".ts", ".js"] },
+        resolve: {
+            extensions: [".ts", ".js"],
+            plugins: [new TsconfigPathsPlugin()]
+        },
         module: {
             rules: [{
                 test: /\.ts$/,
@@ -40,7 +47,10 @@ module.exports = [
     {
         entry: "./public/js/script.ts",
         target: "electron-renderer",
-        resolve: { extensions: [".ts", ".js"] },
+        resolve: {
+            extensions: [".ts", ".js"],
+            plugins: [new TsconfigPathsPlugin()]
+        },
         module: {
             rules: [{
                 test: /\.ts$/,
@@ -70,7 +80,10 @@ module.exports = [
     {
         entry: "./public/js/settings.ts",
         target: "electron-renderer",
-        resolve: { extensions: [".ts", ".js"] },
+        resolve: {
+            extensions: [".ts", ".js"],
+            plugins: [new TsconfigPathsPlugin()]
+        },
         module: {
             rules: [{
                 test: /\.ts$/,
@@ -97,3 +110,5 @@ module.exports = [
         }
     }
 ];
+
+export default config;
