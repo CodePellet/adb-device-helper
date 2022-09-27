@@ -1,4 +1,4 @@
-import "@Style/style.css";
+import "@Styles/style.css";
 
 import "@fortawesome/fontawesome-free";
 import "bootstrap";
