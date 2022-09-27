@@ -54,9 +54,7 @@
       ],
       /* RENDERER THREAD MODULES*/
       "@Components/*": [
-        "public/js/components/FilterListItem/*",
-        "public/js/components/MacroListItem/*",
-        "public/js/components/Toast/*",
+        "public/js/components/*",
       ],
       "@Styles/*": [
         "public/css/*"

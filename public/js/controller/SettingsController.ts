@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/extensions
 import Toast from "@Components/Toast";
 
 export class SettingsController {
