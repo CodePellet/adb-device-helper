@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = [
     /** MAIN THREAD */
     {
-        mode: "development",
         entry: "./src/main.ts",
         target: "electron-main",
         resolve: { extensions: [".ts", ".js"] },
@@ -18,13 +17,13 @@ module.exports = [
         output: {
             path: `${__dirname}/dist/src`,
             filename: "main.js",
-
         }
     },
+    /** ELECTRON PRELOAD */
     {
-        mode: "development",
         entry: "./src/preload.ts",
         target: "electron-preload",
+        resolve: { extensions: [".ts", ".js"] },
         module: {
             rules: [{
                 test: /\.ts$/,
@@ -39,13 +38,12 @@ module.exports = [
     },
     /** MAIN RENDER THREAD */
     {
-        mode: "development",
         entry: "./public/js/script.ts",
         target: "electron-renderer",
         resolve: { extensions: [".ts", ".js"] },
         module: {
             rules: [{
-                test: /\.ts(x?)$/,
+                test: /\.ts$/,
                 include: /public/,
                 use: [{ loader: "ts-loader" }]
             },
@@ -70,13 +68,12 @@ module.exports = [
     },
     /** SETTINGS VIEW THREAD */
     {
-        mode: "development",
         entry: "./public/js/settings.ts",
         target: "electron-renderer",
         resolve: { extensions: [".ts", ".js"] },
         module: {
             rules: [{
-                test: /\.ts(x?)$/,
+                test: /\.ts$/,
                 include: /public/,
                 use: [{ loader: "ts-loader" }]
             },

@@ -5,8 +5,9 @@
     "main": "dist/src/main.js",
     "scripts": {
         "start": "npm run build:dev && electron .",
-        "build:dev": "webpack --config ./webpack.config.js",
-        "build": "npm run build:dev && electron-builder --win"
+        "build:dev": "webpack --mode=development --config ./webpack.config.js",
+        "build:prod": "webpack --mode=production --config ./webpack.config.js",
+        "build": "npm run build:prod && electron-builder --win"
     },
     "author": {
         "name": "CodePellet",
