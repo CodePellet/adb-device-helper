@@ -1,9 +1,9 @@
+import { MacroController } from "@Controller/adbdh-macro-controller";
+import { ShellController } from "@Controller/adbdh-shell-controller";
 import { JsonMap } from "@iarna/toml/index";
+import { AndroidDevice } from "@Interfaces/common";
+import { RogcatProfiler } from "@Modules/adbdh-rogcat-profiler";
 import { app, ipcMain } from "electron";
-import { AndroidDevice } from "../interfaces/common";
-import { RogcatProfiler } from "../modules/adbdh-rogcat-profiler";
-import { MacroController } from "../modules/controller/adbdh-macro-controller";
-import { ShellController } from "../modules/controller/adbdh-shell-controller";
 
 const shellController = ShellController.getInstance();
 const rogcatProfiler = RogcatProfiler.getInstance();

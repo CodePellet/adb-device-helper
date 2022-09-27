@@ -1,12 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { EnvController } from "@Controller/adbdh-env-controller";
+import "@Handler/IpcMainHandler";
+import { Views, ViewType } from "@Views/views";
 import { AdbDeviceTracker } from "adbdevicetracker";
 import { app, BrowserWindow, BrowserWindowConstructorOptions, Menu, MenuItemConstructorOptions, shell } from "electron";
 import * as log from "electron-log";
 import * as fs from "fs";
 import * as path from "path";
-import "./handler/IpcMainHandler";
-import { EnvController } from "./modules/controller/adbdh-env-controller";
-import { Views, ViewType } from "./views/views";
 
 
 let mainWindow: BrowserWindow;

@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { RogcatProfile, RogcatShellOptions } from "@Interfaces/common";
 import { contextBridge, ipcRenderer, shell } from "electron";
-import { RogcatProfile, RogcatShellOptions } from "./interfaces/common";
 
 
 contextBridge.exposeInMainWorld("electron", {

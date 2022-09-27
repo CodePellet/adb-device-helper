@@ -1,5 +1,5 @@
+import { SettingsView } from "@Views/view-settings";
 import { BrowserWindow } from "electron";
-import { SettingsView } from "./view-settings";
 
 export enum ViewType {
     SETTINGS = "settings",
