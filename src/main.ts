@@ -68,6 +68,13 @@ const mainMenuTemplate: MenuItemConstructorOptions[] = [
             {
                 label: "View on GitHub",
                 click: () => { shell.openExternal("https://github.com/CodePellet/adb-device-helper") }
+            },
+            {
+                type: "separator"
+            },
+            {
+                label: "Open log file",
+                click: () => shell.openExternal(path.resolve(process.env.APPDATA!, app.getName(), "logs", "main.log"))
             }
         ]
     }
