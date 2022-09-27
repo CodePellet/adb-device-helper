@@ -15,6 +15,32 @@
         sans-serif;
 }
 
+.zIndex9999 {
+    z-index: 9999 !important;
+}
+
+.w-500px {
+    width: 500px;
+}
+
+.w-126px {
+    width: 126px;
+}
+
+.w-75px {
+    width: 75px;
+}
+
+.w-64px {
+    max-width: 64px;
+    min-width: 64px;
+}
+
+.wh-125rem {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 .nav-pills .nav-link.active {
     color: #fff !important;
     background-color: #212529;
@@ -33,4 +59,9 @@
 .settings.nav-link:not(.active) {
     border-radius: 0;
     border-bottom: 1px solid transparent;
+}
+
+.settings-logo {
+    width: 128px;
+    height: 128px;
 }

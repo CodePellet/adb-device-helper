@@ -5,15 +5,13 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ADB-Device-Helper</title>
-  <!-- <link rel="stylesheet" href="../css/style.css" /> -->
-  <!-- <script src="../js/script.js" type="module"></script> -->
+  <title>ADB Device Helper</title>
 </head>
 
 <body>
 
   <!-- Toasts -->
-  <div id="toast_container" class="toast-container position-fixed bottom-0 start-0 p-3" style="z-index: 9999;">
+  <div id="toast_container" class="toast-container position-fixed bottom-0 start-0 p-3 zIndex9999">
   </div>
 
   <!-- Main container -->
@@ -29,9 +27,8 @@
             rounded-2
             justify-content-around
           ">
-        <div class="p-2 d-flex align-items-center justify-content-center" style="width: 126px;">
-          <div class="m-0 p-0 d-flex flex-column justify-content-center align-items-center"
-            style="max-width: 64px; min-width: 64px;">
+        <div class="p-2 d-flex align-items-center justify-content-center w-126px">
+          <div class="m-0 p-0 d-flex flex-column justify-content-center align-items-center w-64px">
             <svg class="fill-primary" viewBox="0 0 20 24" version="1.1" xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -52,39 +49,41 @@
           </div>
         </div>
         <div class="container-fluid d-flex p-2 m-0 bg-light rounded-2 align-items-center justify-content-between">
-          <div class="d-flex flex-column" style="width: 500px;">
+          <div class="d-flex flex-column w-500px">
             <div class="input-group mb-2">
-              <label class="input-group-text bg-dark text-light border-dark" for="deviceSelect"
-                style="width: 75px">Device</label>
+              <label class="input-group-text bg-dark text-light border-dark w-75px" for="deviceSelect">Device</label>
               <select class="form-select" id="deviceSelect"></select>
               <!-- Put empty container behind select to be able to show a badge counter for the connected devices -->
-              <span class="position-relative" style="z-index: 1000;">
+              <span class="position-relative zIndex9999">
                 <span id="adbDeviceCountBadge"
                   class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"></span>
               </span>
-              <button id="startAdbServerButton" class="btn btn-success" type="button" disabled>
-                <span class="spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"
-                  style="width: 1.25rem; height: 1.25rem; display: flex; align-items: center; justify-content: center;"></span>
+              <button id="startAdbServerButton" class="btn btn-success" type="button" title="Start ADB-Server" disabled>
+                <span
+                  class="wh-125rem spinner-border spinner-border-sm d-flex align-items-center justify-content-center visually-hidden"
+                  role="status" aria-hidden="true"></span>
                 <i class="fas fa-play fa-fw"></i>
               </button>
-              <button id="stopAdbServerButton" class="btn btn-danger" type="button" disabled>
+              <button id="stopAdbServerButton" class="btn btn-danger" type="button" title="Stop ADB-Server" disabled>
                 <i class="fas fa-stop fa-fw"></i></button>
             </div>
             <div class="d-flex">
               <div class="input-group">
                 <label class="input-group-text bg-dark text-light border-dark" for="profileSelect"
                   style="width: 75px">Profile</label>
-                <select class="form-select" id="profile-select">
+                <select class="form-select" id="profile-select" title="Select Profile">
                   <optgroup label="Default Profile" class="profile-select-default-group"></optgroup>
                   <optgroup label="Custom Profiles" class="profile-select-custom-group"></optgroup>
                 </select>
                 <input class="form-control visually-hidden" type="text" name="newProfileName" id="newProfileName"
                   placeholder="Profile name"
                   onkeyup="if (event.key == 'Enter') document.querySelector('.btn-add-profile').click();">
-                <button class="btn btn-outline-primary bg-primary text-light btn-add-profile" type="button">
+                <button class="btn btn-outline-primary bg-primary text-light btn-add-profile" type="button"
+                  title="Create new profile">
                   <i class="fas fa-plus fa-fw"></i>
                 </button>
-                <button class="btn btn-outline-danger bg-danger text-light btn-remove-profile" type="button">
+                <button class="btn btn-outline-danger bg-danger text-light btn-remove-profile" type="button"
+                  title="Delete profile">
                   <i class="fas fa-trash fa-fw"></i>
                 </button>
               </div>
@@ -92,10 +91,10 @@
           </div>
           <div class="w-50 p-2 d-flex justify-content-end">
             <div class="form-check form-switch me-2">
-              <input class="form-check-input" type="checkbox" id="saveTraceToFile" checked />
+              <input class="form-check-input" type="checkbox" id="saveTraceToFile" title="Save trace to file" checked />
               <label class="form-check-label" for="switchSaveTrace">Save trace</label>
             </div>
-            <a href="#" id="openTraceFolder">
+            <a href="#" id="openTraceFolder" title="Open trace folder">
               <i class="fas fa-external-link-alt fa-lg fa-fw text-dark"></i>
             </a>
           </div>
