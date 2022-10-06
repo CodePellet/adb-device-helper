@@ -10,7 +10,8 @@ export class MacroController {
     private profileSelect: HTMLSelectElement;
     private saveChangesButton: HTMLButtonElement;
     private newMacroItemButton: HTMLButtonElement;
-    private tabPaneResults: HTMLButtonElement;
+    private tabPaneResultsButton: HTMLButtonElement;
+    private tabPaneResultsContent: HTMLDivElement;
     private tabPaneResultBadge: HTMLSpanElement;
     private tabPaneAdbBadge: HTMLSpanElement;
     private macro: any;
@@ -22,7 +23,9 @@ export class MacroController {
 
         this.saveChangesButton = document.getElementById("saveMacroChanges") as HTMLButtonElement;
         this.newMacroItemButton = document.getElementById("newMacroItem") as HTMLButtonElement;
-        this.tabPaneResults = document.querySelector("[data-bs-target='#tabPaneResults']") as HTMLButtonElement;
+        this.tabPaneResultsButton = document.querySelector("[data-bs-target='#tabPaneResults']") as HTMLButtonElement;
+        this.tabPaneResultsContent = document.getElementById("tabPaneResults") as HTMLDivElement;
+
 
         // BADGES
         this.tabPaneResultBadge = document.getElementById("tabPaneResultsBadge") as HTMLSpanElement;
@@ -40,8 +43,8 @@ export class MacroController {
 
         this.newMacroItemButton.addEventListener("click", this.eventListeners().newListItemButton.click);
         this.saveChangesButton.addEventListener("click", this.eventListeners().saveChangesButton.click);
-        this.tabPaneResults.addEventListener("show.bs.tab", this.eventListeners().tabs.resultsTab.shown)
-        this.tabPaneResults.addEventListener("hide.bs.tab", this.eventListeners().tabs.resultsTab.hidden)
+        this.tabPaneResultsButton.addEventListener("show.bs.tab", this.eventListeners().tabs.resultsTab.shown)
+        this.tabPaneResultsButton.addEventListener("hide.bs.tab", this.eventListeners().tabs.resultsTab.hidden)
     }
 
     public static getInstance(): MacroController {
@@ -160,7 +163,7 @@ export class MacroController {
                 const commandResult = error ? stderr : stdout;
                 const commandResultBG = error ? "bg-danger bg-opacity-25" : "bg-success bg-opacity-25";
 
-                this.tabPaneResults.insertAdjacentHTML(
+                this.tabPaneResultsContent.insertAdjacentHTML(
                     "beforeend",
                     `<div id="commandResultContainer_${elementId}" class="form-floating mb-2 d-flex align-items-center justify-content-center text-break">
                         <div id="textarea_${elementId}" class="form-control ${commandResultBG}" style="user-select: text; height: fit-content; --bg">${commandResult.replaceAll("\n", "<br/>")}</div>
@@ -197,7 +200,7 @@ export class MacroController {
                     macroObj?.adb.forEach((t: string) => {
                         MacroListItem.append(".adb-macro-list", t, this.macros().execute, MacroListItem.delete);
                     });
-                    this.tabPaneAdbBadge.innerHTML = macroObj?.adb.length;
+                    this.tabPaneAdbBadge.innerHTML = macroObj?.adb.length ?? 0;
                     // ssh.forEach((m) => MacroListItem.append(".ssh-macro-list", m));
                 },
             },
