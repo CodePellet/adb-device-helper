@@ -66,11 +66,12 @@ export class ProfileController {
                 click: (event: MouseEvent) => {
                     const newProfileNameInput: HTMLInputElement = document.getElementById("newProfileName") as HTMLInputElement;
                     // const profileSelect = document.getElementById("profile-select");
-                    const newProfileIcon: SVGElement = this.addProfileButton.querySelector("svg") as SVGElement;
+                    const newProfileIcon: HTMLElement = this.addProfileButton.querySelector("i") as HTMLElement;
 
                     if (newProfileIcon.classList.contains("fa-plus")) {
                         this.profileSelect.classList.add("visually-hidden");
                         newProfileNameInput.classList.remove("visually-hidden");
+                        newProfileIcon.classList.toggle("fa-plus");
                         newProfileIcon.classList.toggle("fa-check");
                         newProfileNameInput.focus();
                         return;
@@ -80,6 +81,7 @@ export class ProfileController {
                         this.profileSelect.classList.remove("visually-hidden");
                         newProfileNameInput.classList.add("visually-hidden");
                         newProfileIcon.classList.toggle("fa-plus");
+                        newProfileIcon.classList.toggle("fa-check");
                         if (newProfileNameInput.value !== "") this.profiles().create(newProfileNameInput.value);
                         newProfileNameInput.value = "";
                     }
